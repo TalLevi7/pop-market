@@ -1,151 +1,158 @@
 // src/pages/Market.jsx
+
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // React Router
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Market.css';
-import { AuthContext } from '../context/AuthContext'; // Import AuthContext
 
 export default function Market() {
-
   const API_URL = import.meta.env.VITE_API_URL;
-
-  // Takes a token string, returns { user_id, username, exp, ... } or null.
-  const decodeJWTPayload = (token) => {
-    try {
-      const base64Url = token.split('.')[1]; // second segment = payload
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const json = atob(base64);
-      return JSON.parse(json);
-    } catch (err) {
-      return null;
-    }
-  };
-
-  // ─── On every render, read token from localStorage ───────────────────
-  const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
-  let username = null;
+  // — Authentication check (JWT in localStorage) —
+  const token = localStorage.getItem('token');
   let isAuthenticated = false;
-
   if (token) {
-    const payload = decodeJWTPayload(token);
-    if (
-      payload &&
-      payload.username &&
-      typeof payload.exp === 'number'
-    ) {
-      // Check if token is expired (exp is in seconds)
-      const nowSec = Math.floor(Date.now() / 1000);
-      if (payload.exp > nowSec) {
+    try {
+      const payload = JSON.parse(
+        atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
+      );
+      if (payload.exp > Math.floor(Date.now() / 1000)) {
         isAuthenticated = true;
-        username = payload.username;
       } else {
-        // Token expired → remove it
         localStorage.removeItem('token');
       }
-    } else {
-      // Malformed token → remove it
+    } catch {
       localStorage.removeItem('token');
     }
   }
 
-  const [listings, setListings]       = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [error, setError]             = useState(null);
+  // — State —
+  const [listings, setListings]     = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [error, setError]           = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [orderBy, setOrderBy]       = useState('date_desc');
+  const [currentIdx, setCurrentIdx] = useState({});
+  const [lightbox, setLightbox]     = useState({
+    isOpen: false,
+    images: [],
+    current: 0
+  });
 
-  // Filters:
-  const [searchText, setSearchText]   = useState('');
-  const [categoryFilter, setCategoryFilter]   = useState('');
-  const [locationFilter, setLocationFilter]   = useState('');
-
-  // Order‐by: 'date_desc' | 'date_asc' | 'price_desc' | 'price_asc'
-  const [orderBy, setOrderBy]         = useState('date_desc');
-
+  // — Fetch listings —
   useEffect(() => {
-    const fetchListings = async () => {
+    (async () => {
       try {
         setLoading(true);
         const res = await fetch(`${API_URL}/api/market`);
-        if (!res.ok) {
-          throw new Error(`Failed to load market listings: ${res.statusText}`);
-        }
-        const data = await res.json();
-        setListings(data);
+        if (!res.ok) throw new Error(res.statusText);
+        setListings(await res.json());
       } catch (e) {
-        console.error(e);
-        setError(e.message || 'Unknown error');
+        setError(e.message);
       } finally {
         setLoading(false);
       }
-    };
-    fetchListings();
+    })();
   }, [API_URL]);
 
+  // — Derived filters —
   const categories = useMemo(
-    () => Array.from(new Set(listings.map(item => item.category))).sort(),
+    () => Array.from(new Set(listings.map(i => i.category))).sort(),
     [listings]
   );
   const locations = useMemo(
-    () => Array.from(new Set(listings.map(item => item.location))).sort(),
+    () => Array.from(new Set(listings.map(i => i.location))).sort(),
     [listings]
   );
 
-  // search + filter
-  const filtered = useMemo(() => {
-    return listings.filter(item => {
-      const matchesSearch =
-        item.pop_name.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.details.toLowerCase().includes(searchText.toLowerCase());
+  // — Apply search & filters —
+  const filtered = useMemo(
+    () =>
+      listings.filter(item => {
+        const matchesSearch =
+          item.pop_name.toLowerCase().includes(searchText.toLowerCase()) ||
+          item.details.toLowerCase().includes(searchText.toLowerCase());
+        const matchesCategory =
+          !categoryFilter || item.category === categoryFilter;
+        const matchesLocation =
+          !locationFilter || item.location === locationFilter;
+        return matchesSearch && matchesCategory && matchesLocation;
+      }),
+    [listings, searchText, categoryFilter, locationFilter]
+  );
 
-      const matchesCategory =
-        !categoryFilter || item.category === categoryFilter;
-
-      const matchesLocation =
-        !locationFilter || item.location === locationFilter;
-
-      return matchesSearch && matchesCategory && matchesLocation;
-    });
-  }, [listings, searchText, categoryFilter, locationFilter]);
-
-  // Sort according to orderBy
+  // — Apply sorting —
   const sorted = useMemo(() => {
     const copy = [...filtered];
     switch (orderBy) {
       case 'date_asc':
-        return copy.sort((a, b) =>
-          new Date(a.date_uploaded) - new Date(b.date_uploaded)
-        );
+        copy.sort((a, b) => new Date(a.date_uploaded) - new Date(b.date_uploaded));
+        break;
       case 'date_desc':
-        return copy.sort((a, b) =>
-          new Date(b.date_uploaded) - new Date(a.date_uploaded)
-        );
+        copy.sort((a, b) => new Date(b.date_uploaded) - new Date(a.date_uploaded));
+        break;
       case 'price_asc':
-        return copy.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        copy.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        break;
       case 'price_desc':
-        return copy.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+        copy.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+        break;
       default:
-        return copy;
+        break;
     }
+    return copy;
   }, [filtered, orderBy]);
 
-  if (loading) {
-    return <div className="market-loading">Loading listings…</div>;
-  }
-
-  if (error) {
-    return <div className="market-error">Error: {error}</div>;
-  }
-
-    const handleRestrictedPageAccess = (page) => {
+  // — Restrict posting/management —
+  const handleRestricted = page => {
     if (!isAuthenticated) {
       alert(`Access to the ${page} page requires you to log in.`);
-      navigate('/login'); // Redirect to login page if the user isn't authenticated
+      navigate('/login');
     }
   };
 
+  // — Card carousel controls —
+  const nextImage = (id, total) => {
+    setCurrentIdx(ci => ({
+      ...ci,
+      [id]: ((ci[id] || 0) + 1) % total
+    }));
+  };
+  const prevImage = (id, total) => {
+    setCurrentIdx(ci => ({
+      ...ci,
+      [id]: ((ci[id] || 0) - 1 + total) % total
+    }));
+  };
+
+  // — Lightbox controls —
+  const openLightbox = (imgs, startIdx) => {
+    setLightbox({ isOpen: true, images: imgs, current: startIdx });
+  };
+  const closeLightbox = () => {
+    setLightbox(lb => ({ ...lb, isOpen: false }));
+  };
+  const lbPrev = () => {
+    setLightbox(lb => ({
+      ...lb,
+      current: (lb.current - 1 + lb.images.length) % lb.images.length
+    }));
+  };
+  const lbNext = () => {
+    setLightbox(lb => ({
+      ...lb,
+      current: (lb.current + 1) % lb.images.length
+    }));
+  };
+
+  if (loading) return <div className="market-loading">Loading listings…</div>;
+  if (error)   return <div className="market-error">Error: {error}</div>;
+
   return (
     <main className="market-container">
-      {/* ─── Top Controls: Search/Filter (left) | Order By + Post-Ad (right) ─── */}
+      {/* Top Controls */}
       <div className="market-controls">
         <div className="market-search-filter">
           <input
@@ -155,7 +162,6 @@ export default function Market() {
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
           />
-
           <select
             className="market-filter-select"
             value={categoryFilter}
@@ -166,7 +172,6 @@ export default function Market() {
               <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>
-
           <select
             className="market-filter-select"
             value={locationFilter}
@@ -195,62 +200,113 @@ export default function Market() {
           </div>
         </div>
 
-        <div className = "market-postbutton">
+        <div className="market-postbutton">
           <Link to="/NewListing">
-            <button className="post-ad-button" onClick={() => handleRestrictedPageAccess('NewListing')}>
+            <button
+              className="post-ad-button"
+              onClick={() => handleRestricted('NewListing')}
+            >
               + Post an Ad
+            </button>
+          </Link>
+
+          {/* NEW Manage Listings button */}
+          <Link to="/ManageListings">
+            <button
+              className="post-ad-button"
+              onClick={() => handleRestricted('ManageListings')}
+              style={{ marginLeft: '1rem', backgroundColor: '#6c757d' }}
+            >
+              Manage Listings
             </button>
           </Link>
         </div>
       </div>
 
       {sorted.length === 0 ? (
-        <div className="market-no-results">No listings match your criteria.</div>
+        <div className="market-no-results">
+          No listings match your criteria.
+        </div>
       ) : (
         <div className="market-grid">
-          {sorted.map(item => (
-            <div className="market-card" key={item.market_id}>
-              <img
-                className="market-card-image"
-                src={item.market_picture || '/default-pop.png'}
-                alt={item.pop_name}
-              />
+          {sorted.map(item => {
+            const imgs = [
+              item.market_picture,
+              item.market_picture2,
+              item.market_picture3
+            ].filter(u => u);
+            const total = imgs.length || 1;
+            if (imgs.length === 0) imgs.push('/default-pop.png');
+            const idx = currentIdx[item.market_id] || 0;
 
-              <div className="market-card-body">
-                <h3 className="pop-name">{item.pop_name}</h3>
-                {item.category && (
-                  <p className="pop-category">{item.category}</p>
-                )}
-                <p className="pop-serial">
-                  <strong>Serial:</strong> {item.serial_number}
-                </p>
-                <p className="pop-location">
-                  <strong>Location:</strong> {item.location}
-                </p>
-                <p className="pop-price">₪{parseFloat(item.price).toFixed(2)}</p>
-                <p className="pop-date">
-                  <strong>Uploaded:</strong>{' '}
-                  {new Date(item.date_uploaded).toLocaleDateString('en-IL', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
-                </p>
-                <p className="pop-details">
-                  {item.details ? item.details : <em>No extra details</em>}
-                </p>
-              </div>
+            return (
+              <div className="market-card" key={item.market_id}>
+                <div className="carousel-container">
+                  {idx > 0 && (
+                    <button
+                      className="carousel-btn prev"
+                      onClick={() => prevImage(item.market_id, total)}
+                    >‹</button>
+                  )}
+                  <img
+                    className="market-card-image zoomable"
+                    src={imgs[idx]}
+                    alt={`${item.pop_name} view ${idx + 1}`}
+                    onClick={() => openLightbox(imgs, idx)}
+                  />
+                  {idx < total - 1 && (
+                    <button
+                      className="carousel-btn next"
+                      onClick={() => nextImage(item.market_id, total)}
+                    >›</button>
+                  )}
+                </div>
 
-              <div className="market-card-footer">
-                <p className="seller-info">
-                  <strong>Seller:</strong> {item.seller_username}
-                </p>
-                <p className="seller-contact">
-                  <strong>Contact:</strong> {item.seller_email}
-                </p>
+                <div className="market-card-body">
+                  <h3 className="pop-name">{item.pop_name}</h3>
+                  {item.category && <p className="pop-category">{item.category}</p>}
+                  <p className="pop-serial"><strong>Serial:</strong> {item.serial_number}</p>
+                  <p className="pop-location"><strong>Location:</strong> {item.location}</p>
+                  <p className="pop-price">₪{parseFloat(item.price).toFixed(2)}</p>
+                  <p className="pop-date">
+                    <strong>Uploaded:</strong>{' '}
+                    {new Date(item.date_uploaded).toLocaleDateString('en-IL',{
+                      year:'numeric',month:'short',day:'numeric'
+                    })}
+                  </p>
+                  <p className="pop-details">{item.details || <em>No extra details</em>}</p>
+                </div>
+
+                <div className="market-card-footer">
+                  <p className="seller-info"><strong>Seller:</strong> {item.seller_username}</p>
+                  <p className="seller-contact"><strong>Contact:</strong> {item.seller_email}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
+        </div>
+      )}
+
+      {/* Lightbox Overlay */}
+      {lightbox.isOpen && (
+        <div className="lightbox-overlay" onClick={closeLightbox}>
+          <button
+            className="lb-btn prev"
+            onClick={e => { e.stopPropagation(); lbPrev(); }}
+            disabled={lightbox.images.length < 2}
+          >‹</button>
+          <div className="lightbox-image-container" onClick={e => e.stopPropagation()}>
+            <img
+              src={lightbox.images[lightbox.current]}
+              alt=""
+              className="lightbox-image"
+            />
+          </div>
+          <button
+            className="lb-btn next"
+            onClick={e => { e.stopPropagation(); lbNext(); }}
+            disabled={lightbox.images.length < 2}
+          >›</button>
         </div>
       )}
     </main>
