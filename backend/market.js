@@ -37,6 +37,8 @@ router.get('/', async (req, res) => {
         m.price,
         m.date_uploaded,
         m.market_picture,
+        m.market_picture2,
+        m.market_picture3,
         m.details,
         m.location,
         u.username   AS seller_username,
@@ -59,17 +61,12 @@ router.get('/', async (req, res) => {
 // ------------------------------------------------------------
 // POST /api/market
 // Create a new listing, upload image to S3, store its URL.
-// Expects multipart/form-data with:
-//  • not_in_catalog ("true"/"false")
-//  • pop_id (if not_in_catalog=false)
-//  • custom_pop_name & custom_serial_number (if not_in_catalog=true)
-//  • price, location, details
-//  • image (file upload)
+// Expects multipart/form-data with up to 3 files in field "images"
 // ------------------------------------------------------------
 router.post(
   '/',
   authenticate,
-  upload.single('image'),
+  upload.array('images', 3),
   async (req, res) => {
     const sellerId = req.user.id;
     const {
@@ -82,26 +79,24 @@ router.post(
       details
     } = req.body;
 
-    // 1) Upload to S3 if an image was provided
-    let imageUrl = null;
-    if (req.file) {
-      const key = `market-images/${Date.now()}_${req.file.originalname}`;
-      try {
-        // Note: ACL removed because bucket enforces owner-only
-        const command = new PutObjectCommand({
+    // 1) Upload up to 3 files to S3
+    const urls = [null, null, null];
+    try {
+      for (let i = 0; i < (req.files || []).length; i++) {
+        const file = req.files[i];
+        const key  = `market-images/${Date.now()}_${i}_${file.originalname}`;
+        const cmd  = new PutObjectCommand({
           Bucket:      process.env.BUCKET_NAME,
           Key:         key,
-          Body:        req.file.buffer,
-          ContentType: req.file.mimetype
+          Body:        file.buffer,
+          ContentType: file.mimetype,
         });
-        await s3.send(command);
-
-        // Construct the public URL (bucket policy allows public read)
-        imageUrl = `https://${process.env.BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
-      } catch (err) {
-        console.error('S3 upload failed:', err);
-        return res.status(500).json({ error: 'Failed to upload image' });
+        await s3.send(cmd);
+        urls[i] = `https://${process.env.BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
       }
+    } catch (err) {
+      console.error('S3 upload failed:', err);
+      return res.status(500).json({ error: 'Failed to upload images' });
     }
 
     // 2) Validate inputs
@@ -121,40 +116,39 @@ router.post(
       return res.status(400).json({ error: 'Missing location' });
     }
 
-    // 3) Build and execute INSERT
-    let sql, params;
-    if (not_in_catalog === 'true') {
-      sql = `
-        INSERT INTO market
-          (pop_id, seller_id, price, location, market_picture, details, status, approved, custom_pop_name, custom_serial_number)
+    // 3) INSERT into market with all three picture columns
+    const sql = not_in_catalog === 'true'
+      ? `INSERT INTO market
+          (pop_id, seller_id, price, location, market_picture, market_picture2, market_picture3, details, status, approved, custom_pop_name, custom_serial_number)
         VALUES
-          (NULL, ?, ?, ?, ?, ?, 'active', FALSE, ?, ?)
-      `;
-      params = [
-        sellerId,
-        parseFloat(Number(price).toFixed(2)),
-        location,
-        imageUrl,
-        details || null,
-        custom_pop_name.trim(),
-        custom_serial_number?.trim() || null
-      ];
-    } else {
-      sql = `
-        INSERT INTO market
-          (pop_id, seller_id, price, location, market_picture, details, status, approved, custom_pop_name, custom_serial_number)
+          (NULL, ?, ?, ?, ?, ?, ?, ?, 'active', FALSE, ?, ?)`
+      : `INSERT INTO market
+          (pop_id, seller_id, price, location, market_picture, market_picture2, market_picture3, details, status, approved, custom_pop_name, custom_serial_number)
         VALUES
-          (?, ?, ?, ?, ?, ?, 'active', FALSE, NULL, NULL)
-      `;
-      params = [
-        parseInt(pop_id, 10),
-        sellerId,
-        parseFloat(Number(price).toFixed(2)),
-        location,
-        imageUrl,
-        details || null
-      ];
-    }
+          (?, ?, ?, ?, ?, ?, ?, ?, 'active', FALSE, NULL, NULL)`;
+
+    const params = not_in_catalog === 'true'
+      ? [
+          sellerId,
+          parseFloat(price).toFixed(2),
+          location,
+          urls[0],
+          urls[1],
+          urls[2],
+          details || null,
+          custom_pop_name.trim(),
+          custom_serial_number?.trim() || null
+        ]
+      : [
+          parseInt(pop_id, 10),
+          sellerId,
+          parseFloat(price).toFixed(2),
+          location,
+          urls[0],
+          urls[1],
+          urls[2],
+          details || null
+        ];
 
     try {
       const [result] = await db.execute(sql, params);
@@ -162,6 +156,91 @@ router.post(
     } catch (err) {
       console.error('Error inserting new listing:', err);
       res.status(500).json({ error: 'Database error creating listing' });
+    }
+  }
+);
+
+
+// ------------------------------------------------------------
+// GET /api/market/my
+// Return all active listings for the authenticated user
+// ------------------------------------------------------------
+router.get(
+  '/my',
+  authenticate,
+  async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const [rows] = await db.execute(
+        `
+        SELECT
+          m.market_id,
+          COALESCE(p.pop_name, m.custom_pop_name)    AS pop_name,
+          COALESCE(p.serial_number, m.custom_serial_number) AS serial_number,
+          m.price,
+          m.location,
+          m.market_picture,
+          m.market_picture2,
+          m.market_picture3,
+          m.details,
+          m.date_uploaded,
+          m.status
+        FROM market m
+        LEFT JOIN pop_catalog p ON m.pop_id = p.pop_id
+        WHERE m.seller_id = ?
+          AND m.status = 'active'
+        ORDER BY m.date_uploaded DESC
+        `,
+        [userId]
+      );
+      res.json(rows);
+    } catch (err) {
+      console.error('Error fetching user listings:', err);
+      res.status(500).json({ error: 'Could not load your listings' });
+    }
+  }
+);
+
+
+// ------------------------------------------------------------
+// PATCH /api/market/:id
+// Update a listing’s status (e.g. mark as sold)
+// ------------------------------------------------------------
+router.patch(
+  '/:id',
+  authenticate,
+  async (req, res) => {
+    const userId = req.user.id;
+    const marketId = parseInt(req.params.id, 10);
+    const { status } = req.body; // expecting { status: 'sold' }
+
+    // Validate status
+    if (!['active', 'sold', 'archived'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    try {
+      // Ensure this listing belongs to the user
+      const [existing] = await db.execute(
+        `SELECT seller_id FROM market WHERE market_id = ?`,
+        [marketId]
+      );
+      if (!existing.length) {
+        return res.status(404).json({ error: 'Listing not found' });
+      }
+      if (existing[0].seller_id !== userId) {
+        return res.status(403).json({ error: 'Not your listing' });
+      }
+
+      // Perform the update
+      await db.execute(
+        `UPDATE market SET status = ? WHERE market_id = ?`,
+        [status, marketId]
+      );
+      res.json({ success: true });
+    } catch (err) {
+      console.error('Error updating listing status:', err);
+      res.status(500).json({ error: 'Could not update listing' });
     }
   }
 );

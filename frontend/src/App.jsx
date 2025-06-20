@@ -21,6 +21,7 @@ import Footer from "./components/Footer";
 // Import PrivateRoute component
 import PrivateRoute from './components/PrivateRoute';
 import NewListing from './pages/NewListing';
+import ManageListings from './pages/ManageListings';
 
 function App() {
   return (
@@ -43,6 +44,10 @@ function App() {
         <Route 
           path="newlisting" 
           element={<PrivateRoute element={<NewListing />} />} 
+        />
+        <Route 
+          path="managelistings" 
+          element={<PrivateRoute element={<ManageListings />} />} 
         />
 
         <Route path="contactus" element={<ContactUs />} />
