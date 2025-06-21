@@ -62,7 +62,7 @@ function Navbar() {
 
   return (
     <header className="navbar">
-      <img src="./images/popmarketlogo.png" alt="Pop-Market Logo" className="logo" />
+      <img src="/images/popmarketlogo.png" alt="Pop-Market Logo" className="logo" />
       <ul>
         <li>
           <Link to="/">Home</Link>

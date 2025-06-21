@@ -19,12 +19,16 @@ const collectionRoutes = require('./collection');
 const wishlistRoutes   = require('./wishlist');
 const marketRoutes   = require('./market');
 
+
 app.use('/api/catalog', catalogRoutes);
 app.use('/api/collection', collectionRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/market', marketRoutes);
 
 
+// Admin-only routes
+const adminRoutes = require('./adminroutes/admin');
+app.use('/api/admin', adminRoutes);
 
 
 // Root Route (for testing)

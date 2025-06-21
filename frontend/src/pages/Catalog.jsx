@@ -227,7 +227,9 @@ function Catalog() {
                 <p>
                   <strong>Sub-Category:</strong> {pop.sub_category}
                 </p>
-
+                <p>
+                  <strong>Release-Year:</strong> {pop.release_year}
+                </p>
                 <div className="card-actions">
                   <button
                     className="addtocollection-button"

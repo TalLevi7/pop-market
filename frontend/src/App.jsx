@@ -1,3 +1,5 @@
+// src/App.jsx
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -13,6 +15,16 @@ import Login from "./pages/Login";
 import Market from "./pages/Market";
 import Signup from "./pages/Signup";
 import Wishlist from "./pages/Wishlist";
+import NewListing from './pages/NewListing';
+import ManageListings from './pages/ManageListings';
+
+
+// Admin routes
+import AdminPanel from './pages/adminpages/AdminPanel';    
+import AdminMarket  from './pages/adminpages/AdminMarket';
+import AdminApproveListings from './pages/adminpages/AdminApproveListings';
+import AdminEditCatalog from './pages/adminpages/AdminEditCatalog';
+import AdminManageUsers from './pages/adminpages/AdminManageUsers';
 
 // Components
 import Navbar from "./components/Navbar";
@@ -20,8 +32,6 @@ import Footer from "./components/Footer";
 
 // Import PrivateRoute component
 import PrivateRoute from './components/PrivateRoute';
-import NewListing from './pages/NewListing';
-import ManageListings from './pages/ManageListings';
 
 function App() {
   return (
@@ -31,7 +41,7 @@ function App() {
         <Route path="market" element={<Market />} />
         <Route path="catalog" element={<Catalog />} />
         <Route path="about" element={<About />} />
-        
+
         {/* Protect routes with PrivateRoute */}
         <Route 
           path="collection" 
@@ -48,6 +58,28 @@ function App() {
         <Route 
           path="managelistings" 
           element={<PrivateRoute element={<ManageListings />} />} 
+        />
+        <Route
+          path="admin/users"
+          element={<PrivateRoute element={<AdminManageUsers />} />}
+        />
+
+        {/* Admin panel (also protected by PrivateRoute + in-component admin check) */}
+        <Route 
+          path="admin" 
+          element={<PrivateRoute element={<AdminPanel />} />} 
+        />
+        <Route
+          path="admin/market"
+          element={<PrivateRoute element={<AdminMarket />} />}
+        />
+        <Route
+          path="admin/approvals"
+          element={<PrivateRoute element={<AdminApproveListings />} />}
+        />
+        <Route
+          path="admin/catalog"
+          element={<PrivateRoute element={<AdminEditCatalog />} />}
         />
 
         <Route path="contactus" element={<ContactUs />} />
