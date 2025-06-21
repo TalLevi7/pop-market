@@ -21,6 +21,13 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
+    // new: Prevent banned users from logging in
+    if (user[0].is_banned) {
+      return res
+        .status(403)
+        .json({ error: 'Your account has been banned. Please contact support.' });
+    }
+
     // Check if password_hash field is available
     if (!user[0].password_hash) {
       return res.status(500).json({ error: 'Password hash not found in database' });
@@ -33,7 +40,16 @@ const login = async (req, res) => {
     }
 
     // Create a JWT token
-    const token = jwt.sign({ user_id: user[0].user_id, username: user[0].username, email: user[0].email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      {
+        user_id: user[0].user_id,
+        username: user[0].username,
+        email: user[0].email,
+        is_admin: user[0].is_admin   // added admin flag into the token
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
     // Send the token back to the client
     res.json({ token });
   } catch (err) {
