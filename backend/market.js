@@ -212,15 +212,15 @@ router.patch(
   async (req, res) => {
     const userId = req.user.id;
     const marketId = parseInt(req.params.id, 10);
-    const { status } = req.body; // expecting { status: 'sold' }
+    const { status } = req.body;
 
-    // Validate status
-    if (!['active', 'sold', 'archived'].includes(status)) {
+    // allow 'sold' or 'removed'
+    if (!['active','sold','removed','archived'].includes(status)) {
       return res.status(400).json({ error: 'Invalid status' });
     }
 
     try {
-      // Ensure this listing belongs to the user
+      // verify ownership
       const [existing] = await db.execute(
         `SELECT seller_id FROM market WHERE market_id = ?`,
         [marketId]
@@ -232,7 +232,7 @@ router.patch(
         return res.status(403).json({ error: 'Not your listing' });
       }
 
-      // Perform the update
+      // update
       await db.execute(
         `UPDATE market SET status = ? WHERE market_id = ?`,
         [status, marketId]

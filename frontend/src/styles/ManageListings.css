@@ -1,4 +1,4 @@
-/* src/styles/ManageListing.css */
+/* src/styles/ManageListings.css */
 
 .manage-container {
   max-width: 800px;
@@ -63,11 +63,21 @@
 }
 
 .manage-button.sold {
-  background-color: #dc3545;
+  background-color: #28a745;
   color: #fff;
 }
 
 .manage-button.sold:hover {
+  background-color: #218838;
+}
+
+.manage-button.remove {
+  background-color: #dc3545;
+  color: #fff;
+  margin-top: 0.5rem;
+}
+
+.manage-button.remove:hover {
   background-color: #c82333;
 }
 
