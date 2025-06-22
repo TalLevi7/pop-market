@@ -279,7 +279,12 @@ export default function Market() {
 
                 <div className="market-card-footer">
                   <p className="seller-info"><strong>Seller:</strong> {item.seller_username}</p>
-                  <p className="seller-contact"><strong>Contact:</strong> {item.seller_email}</p>
+                  <p className="seller-contact"><strong>Email:</strong> {item.seller_email}</p>
+                  {item.seller_phone != null && item.seller_phone !== '' && (
+                    <p className="seller-contact">
+                      <strong>Phone Number:</strong> {item.seller_phone}
+                    </p>
+                  )}
                 </div>
               </div>
             );

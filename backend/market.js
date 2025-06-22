@@ -42,7 +42,8 @@ router.get('/', async (req, res) => {
         m.details,
         m.location,
         u.username   AS seller_username,
-        u.email      AS seller_email
+        u.email      AS seller_email,
+        u.phone_number AS seller_phone
       FROM market m
       LEFT JOIN pop_catalog p ON m.pop_id = p.pop_id
       JOIN users u             ON m.seller_id = u.user_id
