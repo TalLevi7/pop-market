@@ -18,13 +18,13 @@ const catalogRoutes = require('./catalog');
 const collectionRoutes = require('./collection');
 const wishlistRoutes   = require('./wishlist');
 const marketRoutes   = require('./market');
-
+const contactRouter = require('./contact');
 
 app.use('/api/catalog', catalogRoutes);
 app.use('/api/collection', collectionRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/market', marketRoutes);
-
+app.use('/api/contact', contactRouter);
 
 // Admin-only routes
 const adminRoutes = require('./adminroutes/admin');
