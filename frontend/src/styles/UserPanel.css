@@ -1,0 +1,109 @@
+/* src/styles/UserPanel.css */
+
+.up-container {
+  max-width: 600px;
+  margin: 2.5rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.up-container h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.up-error,
+.up-success {
+  text-align: center;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.up-error {
+  background: #ffe6e6;
+  color: #cc0000;
+  border: 1px solid #cc0000;
+}
+
+.up-success {
+  background: #e6ffed;
+  color: #006600;
+  border: 1px solid #00aa00;
+}
+
+.up-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.up-form label {
+  font-weight: 500;
+}
+
+.up-note {
+  font-size: 0.85rem;
+  color: #666;
+  margin-left: 0.5rem;
+}
+
+.up-form input[type="text"],
+.up-form input[type="email"] {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.up-form input[type="email"][disabled] {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.up-help {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+.up-form input:focus {
+  outline: 2px solid #66afe9;
+  border-color: #66afe9;
+}
+
+.up-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.up-submit {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  font-size: 1.1rem;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.up-submit:hover {
+  background: #0056b3;
+}
+
+@media (max-width: 480px) {
+  .up-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}

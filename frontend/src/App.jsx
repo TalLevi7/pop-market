@@ -17,7 +17,7 @@ import Signup from "./pages/Signup";
 import Wishlist from "./pages/Wishlist";
 import NewListing from './pages/NewListing';
 import ManageListings from './pages/ManageListings';
-
+import UserPanel from './pages/UserPanel';
 
 // Admin routes
 import AdminPanel from './pages/adminpages/AdminPanel';    
@@ -61,8 +61,8 @@ function App() {
           element={<PrivateRoute element={<ManageListings />} />} 
         />
         <Route
-          path="admin/users"
-          element={<PrivateRoute element={<AdminManageUsers />} />}
+          path="userpanel"
+          element={<PrivateRoute element={<UserPanel />} />}
         />
 
         {/* Admin panel (also protected by PrivateRoute + in-component admin check) */}
@@ -82,6 +82,10 @@ function App() {
           path="admin/catalog"
           element={<PrivateRoute element={<AdminEditCatalog />} />}
         />
+         <Route
+          path="admin/users"
+          element={<PrivateRoute element={<AdminManageUsers />} />}
+        />       
         <Route 
           path="admin/contact-messages" 
           element={<PrivateRoute element={<AdminContactMessages />} />} 

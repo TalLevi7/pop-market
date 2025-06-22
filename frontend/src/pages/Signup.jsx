@@ -1,14 +1,15 @@
+// src/pages/Signup.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Signup.css';
 
 function Signup() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername]         = useState('');
+  const [email, setEmail]               = useState('');
+  const [phoneNumber, setPhoneNumber]   = useState('');
+  const [password, setPassword]         = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError]               = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -61,19 +62,51 @@ function Signup() {
         <h2>Sign Up</h2>
         <form onSubmit={handleSubmit} className="signup-form">
           <label htmlFor="username">Username:</label>
-          <input id="username" type="text" value={username} onChange={e => setUsername(e.target.value)} required />
+          <input
+            id="username"
+            type="text"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            required
+          />
           
           <label htmlFor="email">Email:</label>
-          <input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
           
           <label htmlFor="phoneNumber">Phone Number (optional):</label>
-          <input id="phoneNumber" type="tel" value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
+          <input
+            id="phoneNumber"
+            type="tel"
+            value={phoneNumber}
+            onChange={e => setPhoneNumber(e.target.value)}
+          />
+          <div className="signup-help">
+            Adding your phone number will display it on any market listings you post.
+          </div>
 
           <label htmlFor="password">Password:</label>
-          <input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
 
           <label htmlFor="confirmPassword">Confirm Password:</label>
-          <input id="confirmPassword" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
+          <input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            required
+          />
 
           {error && <p className="error">{error}</p>}
           <button type="submit">Sign Up</button>

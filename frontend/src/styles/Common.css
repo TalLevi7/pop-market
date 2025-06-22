@@ -156,3 +156,22 @@ button {
         padding: 10px 20px;
     }
 }
+.user-panel-icon {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.user-icon {
+  height: 20px;
+  width: 20px;
+  object-fit: contain;
+  border-radius: 20%;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.user-icon:hover {
+  transform: scale(1.1);
+}
+

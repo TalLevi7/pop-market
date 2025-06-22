@@ -1,10 +1,12 @@
-/* 1. Outer wrapper: row layout with centered items */
+/* src/styles/Signup.css */
+
+/* 1. Page layout */
 .signup-page {
   display: flex;
-  align-items: center;      /* vertical centering */
-  justify-content: center;  /* horizontal centering */
-  padding: 10px;
-  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #f7f9fc;
 }
 
 /* 2. Side images: fixed-ish width, maintain aspect ratio */
@@ -16,63 +18,77 @@
   margin: 0 20px;    /* gap between image & form */
 }
 
-/* 3. Main container (your existing form styles) */
+/* 3. Main form container */
 .signup-container {
-  max-width: 400px;
-  padding: 20px;
-  background: #f9f9f9;
+  background: #fff;
+  padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  text-align: left;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  max-width: 400px;
+  width: 100%;
+  font-family: Arial, sans-serif;
 }
 
 .signup-container h2 {
   text-align: center;
-  margin-bottom: 20px;
-}
-
-.signup-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.signup-form label {
-  margin-top: 10px;
-  font-size: 16px;
+  margin-bottom: 1.5rem;
   color: #333;
 }
 
+/* 4. Form fields */
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.signup-form label {
+  font-weight: 500;
+}
+
 .signup-form input {
-  padding: 8px;
+  padding: 0.5rem;
+  font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-top: 5px;
+  box-sizing: border-box;
 }
 
-.signup-form button {
-  margin-top: 20px;
-  padding: 10px;
-  background: #28a745;
-  color: white;
+/* 5. Help text under phone number */
+.signup-help {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* 6. Submit button */
+button[type="submit"] {
+  padding: 0.75rem;
+  font-size: 1rem;
+  background: #007bff;
+  color: #fff;
   border: none;
   border-radius: 4px;
-  font-size: 16px;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-.signup-form button:hover {
-  background: #218838;
+button[type="submit"]:hover {
+  background: #0056b3;
 }
 
+/* 7. Error message */
 .error {
-  color: #d9534f;
-  margin-top: 10px;
+  color: #cc0000;
+  text-align: center;
 }
 
+/* 8. Login link below form */
 .login-text {
   text-align: center;
-  margin-top: 15px;
-  font-size: 16px;
+  margin-top: 1rem;
+  font-size: 0.9rem;
 }
 
 .login-text a {
@@ -84,14 +100,13 @@
   text-decoration: underline;
 }
 
-/* 4. Responsive fallback: stack vertically on narrow screens */
-@media (max-width: 600px) {
-  .signup-page {
-    flex-direction: column;
-  }
+/* 9. Responsive tweak */
+@media (max-width: 768px) {
   .signup-side-image {
-    margin: 10px 0;
-    width: 80px;
-    max-width: 40%;
+    display: none; /* hide side images on small screens */
+  }
+  .signup-container {
+    max-width: 100%;
+    margin: 0 1rem;
   }
 }

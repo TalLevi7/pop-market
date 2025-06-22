@@ -88,6 +88,9 @@ function Navbar() {
             <span className="navbar-greeting">
               Hello,&nbsp;{username} 😊
             </span>
+            <Link to="/userpanel" className="user-panel-icon" title="User Panel">
+              <img src="/images/user-icon.png" alt="User Panel" className="user-icon" />
+            </Link>
             <button className="logout" onClick={handleLogout}>
               Log Out
             </button>
