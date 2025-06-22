@@ -1,6 +1,6 @@
 // src/pages/adminpages/AdminMarket.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import '../../styles/AdminMarket.css';
 
 // AdminMarket: list/edit/delete all market listings
@@ -12,19 +12,20 @@ export default function AdminMarket() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
   const [editId, setEditId]   = useState(null);
-  const [form, setForm]       = useState({ price:'', location:'', details:'' });
+  const [form, setForm]       = useState({ price: '', location: '', details: '' });
+  const [search, setSearch]   = useState('');
 
   // fetch listings
   useEffect(() => {
-    (async() => {
+    (async () => {
       try {
         setLoading(true);
         const res = await fetch(`${API_URL}/api/admin/market`, {
-          headers:{ Authorization:`Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) throw new Error(res.statusText);
         setItems(await res.json());
-      } catch(e) {
+      } catch (e) {
         setError(e.message);
       } finally {
         setLoading(false);
@@ -32,21 +33,33 @@ export default function AdminMarket() {
     })();
   }, [API_URL, token]);
 
+  // filter items by search term
+  const filteredItems = useMemo(() => {
+    if (!search.trim()) return items;
+    const q = search.toLowerCase();
+    return items.filter(i =>
+      i.pop_name.toLowerCase().includes(q) ||
+      i.serial_number.toLowerCase().includes(q) ||
+      i.seller_username.toLowerCase().includes(q) ||
+      i.seller_email.toLowerCase().includes(q)
+    );
+  }, [items, search]);
+
   const startEdit = item => {
     setEditId(item.market_id);
-    setForm({ 
-      price: item.price, 
-      location: item.location, 
-      details: item.details || '' 
+    setForm({
+      price: item.price,
+      location: item.location,
+      details: item.details || ''
     });
   };
 
   const save = async id => {
     const res = await fetch(`${API_URL}/api/admin/market/${id}`, {
-      method:'PUT',
-      headers:{
-        'Content-Type':'application/json',
-        Authorization:`Bearer ${token}`
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(form)
     });
@@ -60,8 +73,8 @@ export default function AdminMarket() {
   const remove = async id => {
     if (!window.confirm('Delete this listing permanently?')) return;
     const res = await fetch(`${API_URL}/api/admin/market/${id}`, {
-      method:'DELETE',
-      headers:{ Authorization:`Bearer ${token}` }
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
     });
     if (!res.ok) return alert('Delete failed');
     setItems(it => it.filter(i => i.market_id !== id));
@@ -73,6 +86,15 @@ export default function AdminMarket() {
   return (
     <main className="admin-market-container">
       <h1>Manage Market Listings</h1>
+
+      <input
+        className="admin-market-search"
+        type="text"
+        placeholder="Search listings…"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+      />
+
       <table className="admin-market-table">
         <thead>
           <tr>
@@ -83,11 +105,13 @@ export default function AdminMarket() {
             <th>Details</th>
             <th>Upload Date</th>
             <th>Status</th>
+            <th>Seller</th>
+            <th>Contact</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {items.map(item => (
+          {filteredItems.map(item => (
             <tr key={item.market_id}>
               <td>{item.pop_name}</td>
               <td>{item.serial_number}</td>
@@ -125,29 +149,21 @@ export default function AdminMarket() {
                 </>
               )}
 
-              <td>
-                {new Date(item.date_uploaded).toLocaleDateString('en-GB')}
-              </td>
+              <td>{new Date(item.date_uploaded).toLocaleDateString('en-GB')}</td>
               <td>{item.status}</td>
+              <td>{item.seller_username}</td>
+              <td>{item.seller_email}</td>
 
               <td className="admin-actions">
                 {editId === item.market_id ? (
                   <>
-                    <button className="save" onClick={() => save(item.market_id)}>
-                      Save
-                    </button>
-                    <button className="cancel" onClick={() => setEditId(null)}>
-                      Cancel
-                    </button>
+                    <button className="save"   onClick={() => save(item.market_id)}>Save</button>
+                    <button className="cancel" onClick={() => setEditId(null)}>Cancel</button>
                   </>
                 ) : (
                   <>
-                    <button className="edit" onClick={() => startEdit(item)}>
-                      Edit
-                    </button>
-                    <button className="delete" onClick={() => remove(item.market_id)}>
-                      Delete
-                    </button>
+                    <button className="edit"   onClick={() => startEdit(item)}>Edit</button>
+                    <button className="delete" onClick={() => remove(item.market_id)}>Delete</button>
                   </>
                 )}
               </td>

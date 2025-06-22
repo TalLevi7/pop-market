@@ -3,21 +3,24 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// GET all listings (any status)
+// GET all listings (any status), now including seller info
 router.get('/', async (req, res) => {
   try {
     const [rows] = await db.execute(`
       SELECT
         m.market_id,
-        COALESCE(p.pop_name, m.custom_pop_name)    AS pop_name,
+        COALESCE(p.pop_name, m.custom_pop_name)        AS pop_name,
         COALESCE(p.serial_number, m.custom_serial_number) AS serial_number,
         m.price,
         m.location,
         m.details,
         m.status,
-        m.date_uploaded
+        m.date_uploaded,
+        u.username   AS seller_username,    -- NEW
+        u.email      AS seller_email        -- NEW
       FROM market m
       LEFT JOIN pop_catalog p ON m.pop_id = p.pop_id
+      JOIN users u             ON m.seller_id = u.user_id
       ORDER BY m.date_uploaded DESC
     `);
     res.json(rows);
