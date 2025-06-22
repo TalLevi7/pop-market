@@ -51,6 +51,10 @@ export default function AdminPanel() {
           <span className="card-icon">👥</span>
           <span className="card-label">Manage<br />Users</span>
         </Link>
+        <Link to="/admin/contact-messages" className="admin-card">
+          <span className="card-icon">📨</span>
+          <span className="card-label">Contact<br />Messages</span>
+        </Link>
       </div>
     </main>
   );

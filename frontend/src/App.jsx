@@ -25,6 +25,7 @@ import AdminMarket  from './pages/adminpages/AdminMarket';
 import AdminApproveListings from './pages/adminpages/AdminApproveListings';
 import AdminEditCatalog from './pages/adminpages/AdminEditCatalog';
 import AdminManageUsers from './pages/adminpages/AdminManageUsers';
+import AdminContactMessages from './pages/adminpages/AdminContactMessages';
 
 // Components
 import Navbar from "./components/Navbar";
@@ -81,7 +82,10 @@ function App() {
           path="admin/catalog"
           element={<PrivateRoute element={<AdminEditCatalog />} />}
         />
-
+        <Route 
+          path="admin/contact-messages" 
+          element={<PrivateRoute element={<AdminContactMessages />} />} 
+        />
         <Route path="contactus" element={<ContactUs />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
