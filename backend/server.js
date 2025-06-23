@@ -20,6 +20,7 @@ const wishlistRoutes   = require('./wishlist');
 const marketRoutes   = require('./market');
 const contactRouter = require('./contact');
 const userRouter = require('./user');
+const suggestionsRouter = require('./suggestions');
 
 app.use('/api/catalog', catalogRoutes);
 app.use('/api/collection', collectionRoutes);
@@ -27,6 +28,9 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/market', marketRoutes);
 app.use('/api/contact', contactRouter);
 app.use('/api/user', userRouter);
+app.use('/api/suggestions', suggestionsRouter);
+
+
 // Admin-only routes
 const adminRoutes = require('./adminroutes/admin');
 app.use('/api/admin', adminRoutes);

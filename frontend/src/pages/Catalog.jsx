@@ -186,6 +186,13 @@ function Catalog() {
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
+          {/* ─── Suggest New Pop Button ───────────────────────────────────────── */}
+          <button
+            className="suggest-pop-button"
+            onClick={() => window.open('/suggest', '_blank')}
+          >
+            Suggest a new POP
+          </button>
         </div>
 
         {/* Catalog Grid */}

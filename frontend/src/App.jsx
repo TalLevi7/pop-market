@@ -18,6 +18,7 @@ import Wishlist from "./pages/Wishlist";
 import NewListing from './pages/NewListing';
 import ManageListings from './pages/ManageListings';
 import UserPanel from './pages/UserPanel';
+import PopSuggestions from './pages/PopSuggestions';
 
 // Admin routes
 import AdminPanel from './pages/adminpages/AdminPanel';    
@@ -42,6 +43,7 @@ function App() {
         <Route path="market" element={<Market />} />
         <Route path="catalog" element={<Catalog />} />
         <Route path="about" element={<About />} />
+        <Route path="suggest" element={<PopSuggestions />} />
 
         {/* Protect routes with PrivateRoute */}
         <Route 

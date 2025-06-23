@@ -16,6 +16,7 @@ h1 {
   justify-content: center;
   gap: 15px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .catalog-filters input,
@@ -167,4 +168,21 @@ h1 {
   background-color: #ffb300;
   transform: scale(1.05);
   color: white;
+}
+/* src/styles/Catalog.css */
+
+/* Suggest-a-Pop button */
+.suggest-pop-button {
+  background-color: #ffcc00; /* a pleasant green */
+  color: #3f3600;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.suggest-pop-button:hover {
+  background-color: #ffb300; /* slightly darker green on hover */
 }
