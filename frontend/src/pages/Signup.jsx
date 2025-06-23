@@ -1,15 +1,15 @@
 // src/pages/Signup.jsx
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Signup.css';
 
 function Signup() {
-  const [username, setUsername]         = useState('');
-  const [email, setEmail]               = useState('');
-  const [phoneNumber, setPhoneNumber]   = useState('');
-  const [password, setPassword]         = useState('');
+  const [username, setUsername]               = useState('');
+  const [email, setEmail]                     = useState('');
+  const [phoneNumber, setPhoneNumber]         = useState('');
+  const [password, setPassword]               = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError]               = useState('');
+  const [error, setError]                     = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -43,12 +43,12 @@ function Signup() {
       }
 
       // Show success message as an alert
-      window.alert('Signed up successfully!');
+      window.alert('Signed up successfully! Please check your email for verification.');
 
       // Redirect to login after alert
       setTimeout(() => {
         navigate('/login');
-      }, 2000); // Redirect after 2 seconds
+      }, 2000);
     } catch (err) {
       console.error('Signup error:', err);
       setError('Server error, please try again.');
@@ -57,7 +57,11 @@ function Signup() {
 
   return (
     <div className="signup-page">
-      <img src='./images/signup-left.png' alt="signup Left Pic" className="signup-side-image" />
+      <img
+        src="./images/signup-left.png"
+        alt="signup Left Pic"
+        className="signup-side-image"
+      />
       <div className="signup-container">
         <h2>Sign Up</h2>
         <form onSubmit={handleSubmit} className="signup-form">
@@ -69,7 +73,7 @@ function Signup() {
             onChange={e => setUsername(e.target.value)}
             required
           />
-          
+
           <label htmlFor="email">Email:</label>
           <input
             id="email"
@@ -77,14 +81,18 @@ function Signup() {
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
+            pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$"
+            title="Please enter a valid email (e.g. user@example.com)."
           />
-          
+
           <label htmlFor="phoneNumber">Phone Number (optional):</label>
           <input
             id="phoneNumber"
             type="tel"
             value={phoneNumber}
             onChange={e => setPhoneNumber(e.target.value)}
+            pattern="^\d{9,12}$"
+            title="Please enter 9 to 12 digits only."
           />
           <div className="signup-help">
             Adding your phone number will display it on any market listings you post.
@@ -97,6 +105,8 @@ function Signup() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
+            pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+            title="At least 8 characters, with at least one letter and one number."
           />
 
           <label htmlFor="confirmPassword">Confirm Password:</label>
@@ -116,7 +126,11 @@ function Signup() {
           Already have an account? <Link to="/login">Log in here</Link>
         </p>
       </div>
-      <img src='./images/signup-right.png' alt="signup right Pic" className="signup-side-image" />
+      <img
+        src="./images/signup-right.png"
+        alt="signup right Pic"
+        className="signup-side-image"
+      />
     </div>
   );
 }
