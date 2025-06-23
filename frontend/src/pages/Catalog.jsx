@@ -1,14 +1,13 @@
 // src/pages/Catalog.jsx
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';        // ← still used for wishlist/collection redirects
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
-
 import '../styles/Catalog.css';
 
 function Catalog() {
   const [catalogData, setCatalogData]       = useState([]);
-  const [wishlist, setWishlist]             = useState([]);       // will hold an array of pop_id numbers
-  const [collectionIds, setCollectionIds]   = useState([]);       // will hold pop_id numbers already in the user’s collection
+  const [wishlist, setWishlist]             = useState([]);       
+  const [collectionIds, setCollectionIds]   = useState([]);
   const [searchText, setSearchText]         = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [subCategoryFilter, setSubCategoryFilter] = useState('');
@@ -27,7 +26,7 @@ function Catalog() {
   // 2. Load wishlist (pop_id array) on mount (requires auth)
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) return; // no user → skip
+    if (!token) return;
     fetch(`${API_URL}/api/wishlist`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -36,8 +35,6 @@ function Catalog() {
         return r.json();
       })
       .then(rows => {
-        // rows is something like: [ { wish_id, added_date, pop_id, pop_name, … }, … ]
-        // We only need the pop_id array so that .includes(popId) works.
         const popIds = rows.map(item => item.pop_id);
         setWishlist(popIds);
       })
@@ -59,7 +56,6 @@ function Catalog() {
         return r.json();
       })
       .then(items => {
-        // items: [ { collection_id, acquired_date, pop_id, pop_name, … }, … ]
         const popIds = items.map(item => item.pop_id);
         setCollectionIds(popIds);
       })
@@ -113,9 +109,7 @@ function Catalog() {
       try {
         const errJson = await res.json();
         errText = errJson.error || errText;
-      } catch {
-        /* ignore parsing failure */
-      }
+      } catch {}
       alert(errText);
       return;
     }
@@ -133,7 +127,6 @@ function Catalog() {
       return navigate('/login');
     }
 
-    // Prevent duplicates
     if (collectionIds.includes(popId)) {
       alert(`${popName} is already in your collection`);
       return;
@@ -149,7 +142,6 @@ function Catalog() {
     });
 
     if (res.ok) {
-      // Update local state so duplicates are blocked next time
       setCollectionIds(prev => [...prev, popId]);
       alert(`${popName} has been added to your collection`);
     } else {
@@ -158,9 +150,7 @@ function Catalog() {
       try {
         const errJson = await res.json();
         errText = errJson.error || errText;
-      } catch {
-        /* ignore parsing failure */
-      }
+      } catch {}
       alert(errText);
     }
   };
@@ -184,9 +174,7 @@ function Catalog() {
           >
             <option value="">All Categories</option>
             {categories.map(c => (
-              <option key={c} value={c}>
-                {c}
-              </option>
+              <option key={c} value={c}>{c}</option>
             ))}
           </select>
           <select
@@ -195,9 +183,7 @@ function Catalog() {
           >
             <option value="">All Sub-Categories</option>
             {subCategories.map(s => (
-              <option key={s} value={s}>
-                {s}
-              </option>
+              <option key={s} value={s}>{s}</option>
             ))}
           </select>
         </div>
@@ -221,15 +207,9 @@ function Catalog() {
                 <img src={pop.picture} alt={pop.pop_name} />
                 <h3>{pop.pop_name}</h3>
                 <h4>{pop.serial_number}</h4>
-                <p>
-                  <strong>Category:</strong> {pop.category}
-                </p>
-                <p>
-                  <strong>Sub-Category:</strong> {pop.sub_category}
-                </p>
-                <p>
-                  <strong>Release-Year:</strong> {pop.release_year}
-                </p>
+                <p><strong>Category:</strong> {pop.category}</p>
+                <p><strong>Sub-Category:</strong> {pop.sub_category}</p>
+                <p><strong>Release-Year:</strong> {pop.release_year}</p>
                 <div className="card-actions">
                   <button
                     className="addtocollection-button"
@@ -237,7 +217,14 @@ function Catalog() {
                   >
                     Add to collection
                   </button>
-                  <button className="sellonmarket-button">
+                  <button
+                    className="sellonmarket-button"
+                    onClick={() => {
+                      // open NewListing in new tab with pop preselected
+                      const url = `${window.location.origin}/newlisting?popId=${id}`;
+                      window.open(url, '_blank', 'noopener,noreferrer');
+                    }}
+                  >
                     Sell on market
                   </button>
                 </div>

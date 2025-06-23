@@ -1,5 +1,6 @@
 // src/pages/Collection.jsx
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';  // ← added
 import '../styles/Collection.css';
 
 export default function Collection() {
@@ -9,8 +10,9 @@ export default function Collection() {
   const [search, setSearch]     = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterSub, setFilterSub]           = useState('');
-
   const API_URL = import.meta.env.VITE_API_URL;
+
+  const navigate = useNavigate();              // ← added
 
   // Fetch the user's personal collection
   useEffect(() => {
@@ -31,33 +33,28 @@ export default function Collection() {
       .then(data => setItems(data))
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [API_URL]);
 
-const handleRemove = async id => {
-  const token   = localStorage.getItem('token');
-  // 1. find the pop’s name from state
-  const removedItem = items.find(i => i.collection_id === id);
-  const popName     = removedItem?.pop_name || 'Item';
+  const handleRemove = async id => {
+    const token   = localStorage.getItem('token');
+    const removedItem = items.find(i => i.collection_id === id);
+    const popName     = removedItem?.pop_name || 'Item';
 
-  // 2. call DELETE
-  const res = await fetch(`${API_URL}/api/collection/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    const res = await fetch(`${API_URL}/api/collection/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  if (res.ok) {
-    // 3. remove it from local state
-    setItems(prev => prev.filter(i => i.collection_id !== id));
-    // 4. show your alert
-    alert(`${popName} has been deleted from your collection`);
-  } else {
-    console.error('Failed to remove item');
-  }
-};
-
+    if (res.ok) {
+      setItems(prev => prev.filter(i => i.collection_id !== id));
+      alert(`${popName} has been deleted from your collection`);
+    } else {
+      console.error('Failed to remove item');
+    }
+  };
 
   const categories    = [...new Set(items.map(i => i.category))];
   const subCategories = [...new Set(items.map(i => i.sub_category))];
@@ -101,14 +98,16 @@ const handleRemove = async id => {
                 <h4>{item.serial_number}</h4>
                 <p>{item.category} – {item.sub_category}</p>
                 <small>
-                  Acquired: {new Date(item.acquired_date).toLocaleDateString()}
+                  Acquired: {new Date(item.acquired_date).toLocaleDateString('en-GB')}
                 </small>
                 <div className="card-actions">
                   <button
                     className="collectiontomarket-button"
-                    onClick={() =>
-                      window.open(`/sell?collection_id=${item.collection_id}`, '_blank')
-                    }
+                    onClick={() => {
+                      // open NewListing in new tab with pop preselected
+                      const url = `${window.location.origin}/newlisting?popId=${item.pop_id}`;
+                      window.open(url, '_blank', 'noopener,noreferrer');
+                    }}
                   >
                     Sell on market
                   </button>
