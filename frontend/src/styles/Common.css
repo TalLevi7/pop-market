@@ -175,3 +175,22 @@ button {
   transform: scale(1.1);
 }
 
+.admin-button {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  background: #f0ad4e;        /* a gentle amber */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.admin-button:hover {
+  background: #ec971f;
+}
+
+/* You can adjust spacing if needed */
+.auth-buttons .admin-panel-icon {
+  margin-right: 8px;
+}

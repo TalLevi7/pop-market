@@ -1,3 +1,5 @@
+// src/components/Navbar.jsx
+
 import React, { useState, useContext } from 'react'; 
 import { Link, useNavigate } from 'react-router-dom'; // React Router
 import { AuthContext } from '../context/AuthContext'; // Import AuthContext
@@ -19,33 +21,29 @@ function Navbar() {
     }
   };
 
-    // ─── On every render, read token from localStorage ───────────────────
+  // ─── On every render, read token from localStorage ───────────────────
   const token = localStorage.getItem('token');
   let username = null;
   let isAuthenticated = false;
 
-  if (token) {
-    const payload = decodeJWTPayload(token);
-    if (
-      payload &&
-      payload.username &&
-      typeof payload.exp === 'number'
-    ) {
-      // Check if token is expired (exp is in seconds)
-      const nowSec = Math.floor(Date.now() / 1000);
-      if (payload.exp > nowSec) {
-        isAuthenticated = true;
-        username = payload.username;
-      } else {
-        // Token expired → remove it
-        localStorage.removeItem('token');
-      }
+  // Decode payload once for both auth and admin checks
+  const payload = token ? decodeJWTPayload(token) : null;
+  const isAdmin = payload?.is_admin === 1; // detect admin flag
+
+  if (payload && payload.username && typeof payload.exp === 'number') {
+    // Check if token is expired (exp is in seconds)
+    const nowSec = Math.floor(Date.now() / 1000);
+    if (payload.exp > nowSec) {
+      isAuthenticated = true;
+      username = payload.username;
     } else {
-      // Malformed token → remove it
+      // Token expired → remove it
       localStorage.removeItem('token');
     }
+  } else {
+    // Malformed token → remove it
+    localStorage.removeItem('token');
   }
-
 
   const handleLogout = () => {
     logout(); // Logout function from AuthContext
@@ -91,6 +89,13 @@ function Navbar() {
             <Link to="/userpanel" className="user-panel-icon" title="User Panel">
               <img src="/images/user-icon.png" alt="User Panel" className="user-icon" />
             </Link>
+
+            {isAdmin && (
+              <Link to="/admin" className="admin-panel-icon" title="Admin Panel">
+                <button className="admin-button">Admin</button>
+              </Link>
+            )}
+
             <button className="logout" onClick={handleLogout}>
               Log Out
             </button>
