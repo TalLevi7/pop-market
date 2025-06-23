@@ -57,7 +57,7 @@
   font-size: 1rem;
   border-radius: 4px;
   cursor: pointer;
-  align-self: flex-start;
+  align-self: center; /* centered the button */
 }
 
 .suggestion-form button:disabled {

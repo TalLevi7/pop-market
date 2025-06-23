@@ -1,0 +1,74 @@
+/* src/styles/AdminPopSuggestions.css */
+
+.aps-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.aps-container h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.aps-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.aps-table th,
+.aps-table td {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+
+.aps-table th {
+  background: #f0f0f0;
+}
+
+.aps-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.aps-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.aps-actions button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #fff;
+  transition: background 0.2s ease;
+}
+
+.aps-actions button.accept {
+  background: #28a745;
+}
+.aps-actions button.accept:hover {
+  background: #218838;
+}
+
+.aps-actions button.reject {
+  background: #dc3545;
+}
+.aps-actions button.reject:hover {
+  background: #c82333;
+}
+
+.aps-loading,
+.aps-error {
+  text-align: center;
+  color: #666;
+  margin-top: 2rem;
+}

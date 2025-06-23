@@ -55,6 +55,10 @@ export default function AdminPanel() {
           <span className="card-icon">📨</span>
           <span className="card-label">Contact<br />Messages</span>
         </Link>
+        <Link to="/admin/suggestions" className="admin-card">
+          <span className="card-icon">💡</span>
+          <span className="card-label">Review<br />Pop Suggestions</span>
+        </Link>
       </div>
     </main>
   );
