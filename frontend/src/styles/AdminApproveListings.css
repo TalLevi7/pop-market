@@ -1,3 +1,5 @@
+/* src/styles/AdminApproveListings.css */
+
 .admin-approve-container {
   max-width: 1000px;
   margin: 2rem auto;
@@ -20,10 +22,20 @@
   padding: .5rem;
   border: 1px solid #ccc;
   font-size: .9rem;
+  vertical-align: middle;
 }
 
 .admin-approve-table th {
   background: #f0f0f0;
+}
+
+/* new: style the catalog-link select */
+.admin-approve-table select {
+  width: 100%;
+  padding: 0.25rem;
+  font-size: .9rem;
+  border-radius: 4px;
+  border: 1px solid #aaa;
 }
 
 .admin-approve-actions {
@@ -44,7 +56,6 @@
 .admin-approve-actions button.approve {
   background: #28a745;
 }
-
 .admin-approve-actions button.approve:hover {
   background: #218838;
 }
@@ -52,7 +63,6 @@
 .admin-approve-actions button.reject {
   background: #dc3545;
 }
-
 .admin-approve-actions button.reject:hover {
   background: #c82333;
 }
