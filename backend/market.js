@@ -70,13 +70,15 @@ router.get('/', async (req, res) => {
   }
 });
 
+
 // ------------------------------------------------------------
 // GET /api/market/seller/:id/reviews
-// Return all approved reviews for a given seller (across all their listings)
+// Return seller’s username plus all approved reviews for that seller
 // ------------------------------------------------------------
 router.get('/seller/:id/reviews', async (req, res) => {
   const sellerId = parseInt(req.params.id, 10);
   try {
+    // 1) fetch the reviews themselves
     const [rows] = await db.execute(`
       SELECT
         mf.feedback_id,
@@ -91,17 +93,33 @@ router.get('/seller/:id/reviews', async (req, res) => {
       ORDER BY mf.created_at DESC
     `, [sellerId]);
 
-    // compute overall average & count
-    let avg = 0, count = rows.length;
+    // 2) fetch the seller’s own username
+    const [[sellerRow]] = await db.execute(
+      `SELECT username FROM users WHERE user_id = ?`,
+      [sellerId]
+    );
+    const seller_username = sellerRow?.username || 'Unknown';
+
+    // 3) compute overall average & count
+    let avg = 0;
+    const count = rows.length;
     if (count > 0) {
       avg = (rows.reduce((sum, r) => sum + r.rating, 0) / count).toFixed(1);
     }
-    res.json({ reviews: rows, avg_rating: parseFloat(avg), review_count: count });
+
+    // 4) send back everything
+    res.json({
+      seller_username,
+      reviews:      rows,
+      avg_rating:   parseFloat(avg),
+      review_count: count
+    });
   } catch (err) {
     console.error('Error fetching seller reviews:', err);
     res.status(500).json({ error: 'Could not load seller reviews' });
   }
 });
+
 
 // ------------------------------------------------------------
 // POST /api/market
@@ -205,6 +223,7 @@ router.post(
   }
 );
 
+
 // ------------------------------------------------------------
 // GET /api/market/:id/reviews
 // Return all approved reviews for a single listing
@@ -230,6 +249,7 @@ router.get('/:id/reviews', async (req, res) => {
     res.status(500).json({ error: 'Could not load reviews' });
   }
 });
+
 
 // ------------------------------------------------------------
 // POST /api/market/:id/feedback
@@ -282,6 +302,7 @@ router.post(
   }
 );
 
+
 // ------------------------------------------------------------
 // GET /api/market/my
 // Return all active listings for the authenticated user
@@ -292,8 +313,7 @@ router.get(
   async (req, res) => {
     const userId = req.user.id;
     try {
-      const [rows] = await db.execute(
-        `
+      const [rows] = await db.execute(`
         SELECT
           m.market_id,
           COALESCE(p.pop_name, m.custom_pop_name)    AS pop_name,
@@ -311,9 +331,7 @@ router.get(
         WHERE m.seller_id = ?
           AND m.status = 'active'
         ORDER BY m.date_uploaded DESC
-        `,
-        [userId]
-      );
+      `, [userId]);
       res.json(rows);
     } catch (err) {
       console.error('Error fetching user listings:', err);
@@ -321,6 +339,7 @@ router.get(
     }
   }
 );
+
 
 // ------------------------------------------------------------
 // PATCH /api/market/:id

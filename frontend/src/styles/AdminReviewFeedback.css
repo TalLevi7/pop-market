@@ -1,0 +1,93 @@
+/* src/styles/AdminReviewFeedback.css */
+
+.arf-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.arf-container h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.arf-search {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.arf-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.arf-table th,
+.arf-table td {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.arf-table th {
+  background: #f0f0f0;
+}
+
+.arf-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.arf-actions button {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.arf-actions .edit {
+  background: #007bff;
+}
+.arf-actions .edit:hover {
+  background: #0056b3;
+}
+
+.arf-actions .approve {
+  background: #28a745;
+}
+.arf-actions .approve:hover {
+  background: #218838;
+}
+
+.arf-actions .reject {
+  background: #dc3545;
+}
+.arf-actions .reject:hover {
+  background: #c82333;
+}
+
+.arf-actions .save {
+  background: #28a745;
+}
+.arf-actions .save:hover {
+  background: #218838;
+}
+
+.arf-actions .cancel {
+  background: #6c757d;
+}
+.arf-actions .cancel:hover {
+  background: #5a6268;
+}
+
+.arf-loading,
+.arf-error {
+  text-align: center;
+  color: #666;
+  margin-top: 2rem;
+}

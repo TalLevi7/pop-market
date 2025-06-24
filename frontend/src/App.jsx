@@ -30,6 +30,7 @@ import AdminEditCatalog from './pages/adminpages/AdminEditCatalog';
 import AdminManageUsers from './pages/adminpages/AdminManageUsers';
 import AdminContactMessages from './pages/adminpages/AdminContactMessages';
 import AdminPopSuggestions from './pages/adminpages/AdminPopSuggestions';
+import AdminReviewFeedback   from './pages/adminpages/AdminReviewFeedback';
 
 // Components
 import Navbar from "./components/Navbar";
@@ -104,6 +105,11 @@ function App() {
           path="admin/suggestions" 
           element={<PrivateRoute element={<AdminPopSuggestions />} />} 
         />
+        <Route
+          path="/admin/feedbacks"
+          element={<AdminReviewFeedback />}      
+        />
+
         <Route path="contactus" element={<ContactUs />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />

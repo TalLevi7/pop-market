@@ -6,9 +6,14 @@ import '../styles/SellerReviews.css';
 
 export default function SellerReviews() {
   const { sellerId } = useParams();
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL      = import.meta.env.VITE_API_URL;
 
-  const [data, setData]       = useState({ reviews: [], avg_rating: 0, review_count: 0 });
+  const [data, setData]       = useState({
+    seller_username: '',
+    avg_rating: 0,
+    review_count: 0,
+    reviews: []
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
 
@@ -30,24 +35,31 @@ export default function SellerReviews() {
   if (loading) return <p className="sr-loading">Loading reviews…</p>;
   if (error)   return <p className="sr-error">Error: {error}</p>;
 
+  // guard .toFixed by coercing to Number
+  const avg   = Number(data.avg_rating)   || 0;
+  const count = Number(data.review_count) || 0;
+
   return (
     <main className="sr-container">
-      <h1>Seller Reviews</h1>
+      <h1 className="sr-title">{data.seller_username} - Seller reviews</h1>
+
       <div className="sr-summary">
-        {data.review_count > 0
-          ? <>
-              <span className="sr-stars">
-                {Array.from({length:5},(_,i) =>
-                  i < Math.round(data.avg_rating) ? '★' : '☆'
-                ).join('')}
-              </span>
-              <span className="sr-score">
-                {data.avg_rating} ({data.review_count} reviews)
-              </span>
-            </>
-          : <span className="sr-no">No reviews yet</span>
-        }
+        {count > 0 ? (
+          <>Average:
+            <div className="sr-summary-stars">
+              {Array.from({ length: 5 }, (_, i) =>
+                i < Math.round(avg) ? '★' : '☆'
+              ).join('')}
+            </div>
+            <div className="sr-summary-text">
+              {avg.toFixed(1)} / 5 ({count} review{count !== 1 ? 's' : ''})
+            </div>
+          </>
+        ) : (
+          <div className="sr-no">No reviews yet</div>
+        )}
       </div>
+
       <ul className="sr-list">
         {data.reviews.map(r => (
           <li key={r.feedback_id} className="sr-item">
@@ -58,7 +70,7 @@ export default function SellerReviews() {
               </span>
             </div>
             <div className="sr-item-rating">
-              {Array.from({length:5},(_,i) =>
+              {Array.from({ length: 5 }, (_, i) =>
                 i < r.rating ? '★' : '☆'
               ).join('')}
             </div>
@@ -66,7 +78,10 @@ export default function SellerReviews() {
           </li>
         ))}
       </ul>
-      <Link to="/market" className="sr-back">← Back to Market</Link>
+
+      <div className="sr-back">
+        <Link to="/market">← Back to Market</Link>
+      </div>
     </main>
   );
 }

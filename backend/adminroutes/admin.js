@@ -26,5 +26,6 @@ router.use('/catalog',   require('./catalog'));
 router.use('/users',     require('./users'));
 router.use('/contact-messages', require('./contactMessages'));
 router.use('/suggestions', require('./suggestions'));
+router.use('/feedback', require('./feedback'));
 
 module.exports = router;
