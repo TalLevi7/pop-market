@@ -11,8 +11,9 @@ function Catalog() {
   const [searchText, setSearchText]         = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [subCategoryFilter, setSubCategoryFilter] = useState('');
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
   const API_URL = import.meta.env.VITE_API_URL;
 
   // 1. Load entire catalog
@@ -155,6 +156,19 @@ function Catalog() {
     }
   };
 
+    // 7. Navigate to AI Suggestions
+  const goAi = () => {
+    if (!token) {
+      alert('Login required to get AI suggestions');
+      return navigate('/login');
+    }
+    if (collectionIds.length === 0) {
+      alert('Add at least one POP to your collection to get suggestions.');
+      return;
+    }
+    navigate('/catalog/ai-suggestions');
+  };
+
   return (
     <>
       <main>
@@ -186,15 +200,19 @@ function Catalog() {
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
+        </div>
+        <div className="catalog-buttons">
+          <button className="ai-suggest-button" onClick={goAi}>
+            AI Based Suggestions ✨
+          </button>
           {/* ─── Suggest New Pop Button ───────────────────────────────────────── */}
           <button
             className="suggest-pop-button"
             onClick={() => window.open('/suggest', '_blank')}
           >
-            Suggest a new POP
+            Missing anything?
           </button>
         </div>
-
         {/* Catalog Grid */}
         <div className="catalog-grid">
           {filtered.map(pop => {

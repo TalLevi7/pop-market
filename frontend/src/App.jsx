@@ -21,6 +21,7 @@ import UserPanel from './pages/UserPanel';
 import PopSuggestions from './pages/PopSuggestions';
 import NewFeedback from './pages/NewFeedback';
 import SellerReviews from './pages/SellerReviews';
+import AiSuggestions  from './pages/AiSuggestions';
 
 // Admin routes
 import AdminPanel from './pages/adminpages/AdminPanel';    
@@ -75,7 +76,10 @@ function App() {
           path="feedback/new"
           element={<PrivateRoute element={<NewFeedback />} />}
         />
-
+        <Route 
+           path="catalog/ai-suggestions" 
+           element={<PrivateRoute element={<AiSuggestions />} />} 
+        />
         {/* Admin panel (also protected by PrivateRoute + in-component admin check) */}
         <Route 
           path="admin" 

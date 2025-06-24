@@ -1,0 +1,106 @@
+.as-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+.as-loading,
+.as-error,
+.as-none {
+  font-size: 1.2rem;
+  color: #666;
+  margin-top: 2rem;
+}
+.as-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  gap: 20px;
+  margin-top: 1rem;
+}
+.as-card {
+  position: relative;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  transition: transform .2s, box-shadow .2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.as-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.as-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  margin-bottom: .5rem;
+}
+.as-card h3 {
+  margin: .5rem 0 .25rem;
+  font-size: 1rem;
+  color: #222;
+}
+.as-card h4 {
+  margin: 0 0 .5rem;
+  font-size: .85rem;
+  color: #555;
+}
+.as-card p {
+  margin: .2rem 0;
+  font-size: .8rem;
+  color: #666;
+}
+.wishlist-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 20px;
+  color: #ccc;
+  cursor: pointer;
+  transition: color .2s, transform .2s;
+}
+.wishlist-icon:hover { 
+  color: #e74c3c;
+  transform: scale(1.2);
+}
+.wishlist-icon.filled { color: #e74c3c; }
+
+/* Add-to-Collection button, same style as Catalog */
+.as-add-button {
+  margin-top: .75rem;
+  background-color: #00aeff;
+  color: white;
+  border: none;
+  padding: 10px 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  max-width: 120px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.as-add-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.as-add-button:hover:not(:disabled) {
+  background-color: #00aeffde;
+  transform: scale(1.05);
+}
+
+/* Back link */
+.as-back {
+  text-align: center;
+  margin-top: 2rem;
+}
+.as-back a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+.as-back a:hover {
+  text-decoration: underline;
+}
