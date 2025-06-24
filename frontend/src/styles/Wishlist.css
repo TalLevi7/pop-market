@@ -1,12 +1,30 @@
 /* src/styles/Wishlist.css */
 
-.wishlist {
+.wishlist, .wishlist-empty {
   font-family: Arial, sans-serif;
   text-align: center;
+  padding: 2rem 1rem;
 }
 
-.wishlist h1 {
-  margin: 20px 0;
+.wishlist h1,
+.wishlist-empty h1 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  color: #333;
+}
+
+.wishlist-empty p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.empty-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+.empty-link:hover {
+  text-decoration: underline;
 }
 
 .wishlist .catalog-filters {

@@ -1,5 +1,5 @@
-// src/pages/Wishlist.jsx
 import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Wishlist.css';
 
 export default function Wishlist() {
@@ -9,12 +9,17 @@ export default function Wishlist() {
   const [search, setSearch]     = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterSub, setFilterSub]           = useState('');
-  const [collectionIds, setCollectionIds]   = useState([]);       // will hold pop_id numbers already in the user’s collection
+  const [collectionIds, setCollectionIds]   = useState([]);
+  const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // Fetch the user's wishlist
+  // Fetch wishlist
   useEffect(() => {
     const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
     fetch(`${API_URL}/api/wishlist`, {
       headers: {
         'Content-Type': 'application/json',
@@ -31,44 +36,40 @@ export default function Wishlist() {
       .then(data => setItems(data))
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
+  }, [API_URL, navigate]);
+
+  // Fetch user's collection IDs
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch(`${API_URL}/api/collection`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(r => {
+        if (!r.ok) throw new Error('Failed to load collection');
+        return r.json();
+      })
+      .then(items => {
+        const popIds = items.map(item => item.pop_id);
+        setCollectionIds(popIds);
+      })
+      .catch(console.error);
   }, [API_URL]);
 
-    // Load user’s collectionIds (pop_id) on mount (requires auth)
-    useEffect(() => {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-      fetch(`${API_URL}/api/collection`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
-      })
-        .then(r => {
-          if (!r.ok) throw new Error('Failed to load collection');
-          return r.json();
-        })
-        .then(items => {
-          // items: [ { collection_id, acquired_date, pop_id, pop_name, … }, … ]
-          const popIds = items.map(item => item.pop_id);
-          setCollectionIds(popIds);
-        })
-        .catch(console.error);
-    }, [API_URL]);
-
-  // Adds item from wishlist to collection
-const handleAddToCollection = async (popId, popName) => {
+  // Add to collection (and remove from wishlist)
+  const handleAddToCollection = async (popId, popName) => {
     const token = localStorage.getItem('token');
     if (!token) {
       alert(`Login required to add ${popName}`);
       return navigate('/login');
     }
-
-    // Prevent duplicates
     if (collectionIds.includes(popId)) {
       alert(`${popName} is already in your collection`);
       return;
     }
-
     const res = await fetch(`${API_URL}/api/collection`, {
       method: 'POST',
       headers: {
@@ -77,58 +78,49 @@ const handleAddToCollection = async (popId, popName) => {
       },
       body: JSON.stringify({ pop_id: popId })
     });
-
     if (res.ok) {
-      // Update local state so duplicates are blocked next time
       setCollectionIds(prev => [...prev, popId]);
       alert(`${popName} has been added to your collection`);
-      // items added to collection from wishlist, are deleted from wishlist
-      handleRemove(popId,popName,1);
+      handleRemove(popId, popName, true);
     } else {
-      console.error('Failed to add item');
       let errText = 'Failed to add to collection';
       try {
         const errJson = await res.json();
         errText = errJson.error || errText;
-      } catch {
-        /* ignore parsing failure */
-      }
+      } catch {}
       alert(errText);
     }
   };
 
-
   // Remove from wishlist
-const handleRemove = async (popId, popName, tocollection = 0) => {
-  const token   = localStorage.getItem('token');
-  if (!token) {
-    alert(`Login required to remove ${popName}`);
-    return;
-  }  
-
-  // call DELETE
-  const res = await fetch(`${API_URL}/api/wishlist/${popId}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (res.ok) {
-    // remove it from local state
-    setItems(prev => prev.filter(i => i.pop_id !== popId));
-    if (tocollection == 0) {
-      alert(`${popName} has been deleted from your wishlist`);
+  const handleRemove = async (popId, popName, fromCollection = false) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert(`Login required to remove ${popName}`);
+      return;
     }
-  } else {
-    console.error('Failed to remove item');
-  }
-};
+    const res = await fetch(`${API_URL}/api/wishlist/${popId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.ok) {
+      setItems(prev => prev.filter(i => i.pop_id !== popId));
+      if (!fromCollection) {
+        alert(`${popName} has been removed from your wishlist`);
+      }
+    } else {
+      console.error('Failed to remove item');
+    }
+  };
 
-  const categories    = [...new Set(items.map(i => i.category))];
-  const subCategories = [...new Set(items.map(i => i.sub_category))];
+  // derive filter options
+  const categories    = Array.from(new Set(items.map(i => i.category)));
+  const subCategories = Array.from(new Set(items.map(i => i.sub_category)));
 
+  // apply search & filters
   const filtered = items
     .filter(i => i.pop_name.toLowerCase().includes(search.toLowerCase()))
     .filter(i => !filterCategory || i.category === filterCategory)
@@ -136,6 +128,22 @@ const handleRemove = async (popId, popName, tocollection = 0) => {
 
   if (loading) return <div className="wishlist"><p>Loading your wishlist…</p></div>;
   if (error)   return <div className="wishlist error"><p>{error}</p></div>;
+
+  // if truly empty (no items at all), show only the empty message
+  if (items.length === 0) {
+    return (
+      <div className="wishlist-empty">
+        <h1>Your Wishlist is empty</h1>
+        <p>
+          Head over to the{' '}
+          <Link to="/catalog" className="empty-link">
+            Catalog
+          </Link>{' '}
+          to start adding items.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="wishlist">
@@ -168,7 +176,7 @@ const handleRemove = async (popId, popName, tocollection = 0) => {
                 <h4>{item.serial_number}</h4>
                 <p>{item.category} – {item.sub_category}</p>
                 <small>
-                  Added to wishlist: {new Date(item.added_date).toLocaleDateString()}
+                  Added: {new Date(item.added_date).toLocaleDateString()}
                 </small>
                 <div className="card-actions">
                   <button
