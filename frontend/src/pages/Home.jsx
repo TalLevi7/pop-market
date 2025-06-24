@@ -1,47 +1,84 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
 
 function Home() {
   const [latestItems, setLatestItems] = useState([]);
+  const [currentAd, setCurrentAd]     = useState(0);
+  const navigate = useNavigate();
 
+  // List your rotating‐ad image URLs here
+  const ads = [
+    '/images/ad1.png',
+    '/images/ad2.png',
+    '/images/ad3.png'
+  ];
+
+  // Fetch latest market items
   useEffect(() => {
-    fetch('http://localhost:5000/api/latest_market')
-      .then(res => res.json())
-      .then(data => setLatestItems(data))
-      .catch(err => console.error('Error fetching latest market items:', err));
+    fetch(`${import.meta.env.VITE_API_URL}/api/latest_market`)
+      .then(r => r.json())
+      .then(setLatestItems)
+      .catch(console.error);
   }, []);
+
+  // Rotate ads every 5 seconds
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setCurrentAd(i => (i + 1) % ads.length);
+    }, 5000);
+    return () => clearInterval(iv);
+  }, [ads.length]);
 
   return (
     <>
-      <header className="header">
-        <img src="/images/banner.jpeg" alt="Funko Pops Banner" className="banner" />
+      {/* ─── Hero (identical to older version) ───────────────────────────────── */}
+      <header className="home-hero">
+        <img
+          src="/images/banner.jpeg"
+          alt="Funko Pops Banner"
+          className="hero-bg"
+        />
+        <div className="hero-overlay">
+          <h1>Welcome to Pop-Market</h1>
+          <p>Buy, sell & discover rare Funko Pops</p>
+          <button
+            className="btn-primary"
+            onClick={() => navigate('/market')}
+          >
+            Browse Market
+          </button>
+        </div>
       </header>
 
       <main>
-        <section className="news-section">
-          <div className="box">New Releases</div>
-          <div className="box">News</div>
-        </section>
-
         <section className="latest-section">
-          <h2>Latest in Pop-Market</h2>
-          <div id="latest-market-container">
-            {latestItems.map((item, idx) => (
-              <div className="market-item" key={item.id ?? idx}>
+          <h2>Latest on Pop-Market</h2>
+          <div className="latest-grid">
+            {latestItems.map(item => (
+              <div className="latest-card" key={item.id ?? item.market_id}>
                 <img
                   src={item.picture}
                   alt={item.pop_name}
-                  className="pop-image"
+                  className="latest-img"
                 />
-                <h3>{item.pop_name}</h3>
-                <p>Price: ${item.price}</p>
+                <h4>{item.pop_name}</h4>
+                <p className="latest-price">₪{parseFloat(item.price).toFixed(2)}</p>
               </div>
             ))}
           </div>
         </section>
 
         <section className="ad-section">
-          Advertisement
+          <img
+            src={ads[currentAd]}
+            alt={`Advertisement ${currentAd + 1}`}
+            className="ad-image"
+          />
+        </section>
+
+        <section className="footer-placeholder">
+          <p>✨ More exciting features coming soon… ✨</p>
         </section>
       </main>
     </>
