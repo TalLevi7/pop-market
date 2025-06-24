@@ -1,6 +1,7 @@
 // src/pages/Collection.jsx
+
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // ← added
+import { useNavigate, Link } from 'react-router-dom';  // ← added Link
 import '../styles/Collection.css';
 
 export default function Collection() {
@@ -12,7 +13,7 @@ export default function Collection() {
   const [filterSub, setFilterSub]           = useState('');
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const navigate = useNavigate();              // ← added
+  const navigate = useNavigate();
 
   // Fetch the user's personal collection
   useEffect(() => {
@@ -66,6 +67,22 @@ export default function Collection() {
 
   if (loading) return <div className="collection"><p>Loading your collection…</p></div>;
   if (error)   return <div className="collection error"><p>{error}</p></div>;
+
+  // NEW: if user has no collection items at all
+  if (items.length === 0) {
+    return (
+      <div className="collection-empty">
+        <h1>Your Collection Is Empty</h1>
+        <p>
+          Go to the{' '}
+          <Link to="/catalog" className="empty-link">
+            Catalog
+          </Link>{' '}
+          to start adding items to your Collection.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="collection">

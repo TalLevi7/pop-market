@@ -1,13 +1,32 @@
 /* src/styles/Collection.css */
 
-.collection {
+.collection, .collection-empty {
   font-family: Arial, sans-serif;
   text-align: center;
+  padding: 2rem 1rem;
 }
 
-.collection h1 {
-  margin: 20px 0;
+.collection h1,
+.collection-empty h1 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  color: #333;
 }
+
+.collection-empty p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.empty-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+.empty-link:hover {
+  text-decoration: underline;
+}
+
 
 .collection .catalog-filters {
   display: flex;
