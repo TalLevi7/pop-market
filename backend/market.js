@@ -23,7 +23,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // ------------------------------------------------------------
 // GET /api/market
-// Return all approved & active listings. If pop_id is NULL, use custom_pop_name/serial.
+// Return all approved & active listings, with per-seller avg_rating & review_count.
 // ------------------------------------------------------------
 router.get('/', async (req, res) => {
   try {
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
       SELECT
         m.market_id,
         m.pop_id,
-        COALESCE(p.pop_name, m.custom_pop_name)        AS pop_name,
+        COALESCE(p.pop_name, m.custom_pop_name)           AS pop_name,
         COALESCE(p.serial_number, m.custom_serial_number) AS serial_number,
         p.category,
         m.price,
@@ -41,14 +41,26 @@ router.get('/', async (req, res) => {
         m.market_picture3,
         m.details,
         m.location,
-        u.username   AS seller_username,
-        u.email      AS seller_email,
-        u.phone_number AS seller_phone
+        u.user_id        AS seller_id,
+        u.username       AS seller_username,
+        u.email          AS seller_email,
+        u.phone_number   AS seller_phone,
+        COALESCE(s.avg_rating, 0)   AS avg_rating,
+        COALESCE(s.review_count, 0) AS review_count
       FROM market m
       LEFT JOIN pop_catalog p ON m.pop_id = p.pop_id
-      JOIN users u             ON m.seller_id = u.user_id
+      JOIN users u            ON m.seller_id = u.user_id
+      LEFT JOIN (
+        SELECT
+          mf.seller_id,
+          ROUND(AVG(mf.rating),1)    AS avg_rating,
+          COUNT(*)                   AS review_count
+        FROM market_feedback mf
+        WHERE mf.approved = 1
+        GROUP BY mf.seller_id
+      ) AS s ON u.user_id = s.seller_id
       WHERE m.approved = TRUE
-        AND m.status = 'active'
+        AND m.status   = 'active'
       ORDER BY m.date_uploaded DESC
     `);
     res.json(rows);
@@ -58,6 +70,38 @@ router.get('/', async (req, res) => {
   }
 });
 
+// ------------------------------------------------------------
+// GET /api/market/seller/:id/reviews
+// Return all approved reviews for a given seller (across all their listings)
+// ------------------------------------------------------------
+router.get('/seller/:id/reviews', async (req, res) => {
+  const sellerId = parseInt(req.params.id, 10);
+  try {
+    const [rows] = await db.execute(`
+      SELECT
+        mf.feedback_id,
+        mf.rating,
+        mf.review,
+        mf.created_at,
+        u.username AS buyer_username
+      FROM market_feedback mf
+      JOIN users u ON mf.buyer_id = u.user_id
+      WHERE mf.seller_id = ?
+        AND mf.approved = 1
+      ORDER BY mf.created_at DESC
+    `, [sellerId]);
+
+    // compute overall average & count
+    let avg = 0, count = rows.length;
+    if (count > 0) {
+      avg = (rows.reduce((sum, r) => sum + r.rating, 0) / count).toFixed(1);
+    }
+    res.json({ reviews: rows, avg_rating: parseFloat(avg), review_count: count });
+  } catch (err) {
+    console.error('Error fetching seller reviews:', err);
+    res.status(500).json({ error: 'Could not load seller reviews' });
+  }
+});
 
 // ------------------------------------------------------------
 // POST /api/market
@@ -161,6 +205,82 @@ router.post(
   }
 );
 
+// ------------------------------------------------------------
+// GET /api/market/:id/reviews
+// Return all approved reviews for a single listing
+// ------------------------------------------------------------
+router.get('/:id/reviews', async (req, res) => {
+  const marketId = parseInt(req.params.id, 10);
+  try {
+    const [rows] = await db.execute(`
+      SELECT
+        feedback_id,
+        buyer_id,
+        rating,
+        review,
+        created_at
+      FROM market_feedback
+      WHERE market_id = ?
+        AND approved = 1
+      ORDER BY created_at DESC
+    `, [marketId]);
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching reviews:', err);
+    res.status(500).json({ error: 'Could not load reviews' });
+  }
+});
+
+// ------------------------------------------------------------
+// POST /api/market/:id/feedback
+// Submit a new feedback (pending approval)
+// ------------------------------------------------------------
+router.post(
+  '/:id/feedback',
+  authenticate,
+  async (req, res) => {
+    const buyerId  = req.user.id;
+    const marketId = parseInt(req.params.id, 10);
+    const { rating, review } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'Invalid rating' });
+    }
+
+    try {
+      // prevent duplicate per listing
+      const [exists] = await db.execute(
+        `SELECT 1 FROM market_feedback WHERE market_id = ? AND buyer_id = ?`,
+        [marketId, buyerId]
+      );
+      if (exists.length) {
+        return res.status(400).json({ error: 'You already reviewed this listing' });
+      }
+
+      // find seller_id
+      const [mkt] = await db.execute(
+        `SELECT seller_id FROM market WHERE market_id = ?`,
+        [marketId]
+      );
+      if (!mkt.length) {
+        return res.status(404).json({ error: 'Listing not found' });
+      }
+      const sellerId = mkt[0].seller_id;
+
+      // insert feedback
+      await db.execute(
+        `INSERT INTO market_feedback
+           (market_id, buyer_id, seller_id, rating, review)
+         VALUES (?, ?, ?, ?, ?)`,
+        [marketId, buyerId, sellerId, rating, review || null]
+      );
+      res.status(201).json({ success: true });
+    } catch (err) {
+      console.error('Error creating feedback:', err);
+      res.status(500).json({ error: 'Could not submit feedback' });
+    }
+  }
+);
 
 // ------------------------------------------------------------
 // GET /api/market/my
@@ -202,10 +322,9 @@ router.get(
   }
 );
 
-
 // ------------------------------------------------------------
 // PATCH /api/market/:id
-// Update a listing’s status (e.g. mark as sold)
+// Update a listing’s status (e.g. mark as sold/removed)
 // ------------------------------------------------------------
 router.patch(
   '/:id',
@@ -215,7 +334,7 @@ router.patch(
     const marketId = parseInt(req.params.id, 10);
     const { status } = req.body;
 
-    // allow 'sold' or 'removed'
+    // allow 'active','sold','removed','archived'
     if (!['active','sold','removed','archived'].includes(status)) {
       return res.status(400).json({ error: 'Invalid status' });
     }

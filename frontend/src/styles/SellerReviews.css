@@ -1,0 +1,81 @@
+/* src/styles/SellerReviews.css */
+
+.sr-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.sr-container h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.sr-summary {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.sr-stars {
+  color: #f5a623;
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.sr-score {
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+.sr-no {
+  color: #666;
+}
+
+.sr-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sr-item {
+  border-bottom: 1px solid #ddd;
+  padding: 0.75rem 0;
+}
+
+.sr-item-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.sr-item-rating {
+  color: #f5a623;
+  margin-bottom: 0.5rem;
+}
+
+.sr-item-review {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.sr-back {
+  display: block;
+  margin: 2rem auto 0;
+  text-align: center;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.sr-back:hover {
+  text-decoration: underline;
+}
+
+.sr-loading,
+.sr-error {
+  text-align: center;
+  color: #666;
+  margin-top: 2rem;
+}

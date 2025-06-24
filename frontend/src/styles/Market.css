@@ -42,7 +42,7 @@
   flex: 1 1 150px;
 }
 
-/* ─── Right‐side wrapper for Order By + Post-Ad ─────────────────────────── */
+/* ─── Right-side wrapper for Order By + Post-Ad ─────────────────────────── */
 .market-orderpost {
   display: flex;
   align-items: center;
@@ -66,7 +66,7 @@
 
 /* ─── “Post an Ad” Button ───────────────────────────────────────────────── */
 .post-ad-button {
-  background-color: #ffcc00; /* a pleasant green */
+  background-color: #ffcc00;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -75,9 +75,8 @@
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
 }
-
 .post-ad-button:hover {
-  background-color: #ffb300; /* slightly darker green on hover */
+  background-color: #ffb300;
 }
 
 /* ─── No Results ─────────────────────────────────────────────────────────── */
@@ -128,10 +127,9 @@
   height: 200px;
   object-fit: cover;
   background-color: #f5f5f5;
-  cursor: pointer; /* indicate clickable for lightbox */
+  cursor: pointer;
   transition: transform 0.2s ease-in-out;
 }
-
 .zoomable:hover {
   transform: scale(1.1);
 }
@@ -147,7 +145,6 @@
   cursor: pointer;
   z-index: 10;
 }
-
 .carousel-btn.prev { left: 8px; }
 .carousel-btn.next { right: 8px; }
 
@@ -183,7 +180,7 @@
   color: #333;
 }
 
-/* ─── Card Footer (Seller Info) ─────────────────────────────────────────── */
+/* ─── Card Footer (Seller Info + Reviews) ──────────────────────────────── */
 .market-card-footer {
   background-color: #fafafa;
   padding: 0.5rem 0.75rem;
@@ -197,6 +194,48 @@
   color: #444;
 }
 
+/* ★ Rating summary in footer */
+.rating-summary {
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+/* ★ Ensure stars are gold and aligned */
+.rating-summary svg {
+  color: #f5a623;
+  vertical-align: middle;
+  margin: 0 1px;
+}
+
+/* ★ “Reviews” link only */
+.reviews-link {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+.reviews-link:hover {
+  text-decoration: underline;
+}
+
+/* ★ Leave-feedback button */
+.leave-feedback {
+  display: block;
+  width: 100%;
+  margin: 0.25rem 0;
+  padding: 0.4rem;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #fff;
+  background: #28a745;
+  transition: background 0.2s;
+}
+.leave-feedback:hover {
+  background: #218838;
+}
+
 /* ─── Lightbox Overlay ─────────────────────────────────────────────────── */
 .lightbox-overlay {
   position: fixed;
@@ -206,24 +245,18 @@
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  padding: 1rem;           /* give some breathing room around the image */
+  padding: 1rem;
 }
-
-/* allow the image to scale but never overflow */
 .lightbox-image {
-  max-width: 100vw;        /* never wider than viewport */
-  max-height: 100vh;       /* never taller than viewport */
-  object-fit: contain;     /* scale to fit preserving aspect ratio */
+  max-width: 100vw;
+  max-height: 100vh;
+  object-fit: contain;
   cursor: grab;
   transition: transform 0.2s ease-in-out;
 }
-
-/* slightly enlarge on hover if desired */
 .lightbox-image:hover {
   transform: scale(1.05);
 }
-
-/* navigation buttons remain the same */
 .lb-btn {
   position: absolute;
   top: 50%;
@@ -237,15 +270,12 @@
   user-select: none;
   z-index: 2001;
 }
-
 .lb-btn.prev { left: 1rem; }
 .lb-btn.next { right: 1rem; }
-
 .lb-btn:disabled {
   opacity: 0.3;
   cursor: default;
 }
-
 
 /* ─── Responsive tweaks ─────────────────────────────────────────────────── */
 @media (max-width: 600px) {

@@ -19,6 +19,8 @@ import NewListing from './pages/NewListing';
 import ManageListings from './pages/ManageListings';
 import UserPanel from './pages/UserPanel';
 import PopSuggestions from './pages/PopSuggestions';
+import NewFeedback from './pages/NewFeedback';
+import SellerReviews from './pages/SellerReviews';
 
 // Admin routes
 import AdminPanel from './pages/adminpages/AdminPanel';    
@@ -45,6 +47,7 @@ function App() {
         <Route path="catalog" element={<Catalog />} />
         <Route path="about" element={<About />} />
         <Route path="suggest" element={<PopSuggestions />} />
+        <Route path="seller/:sellerId/reviews" element={<SellerReviews />} />
 
         {/* Protect routes with PrivateRoute */}
         <Route 
@@ -66,6 +69,10 @@ function App() {
         <Route
           path="userpanel"
           element={<PrivateRoute element={<UserPanel />} />}
+        />
+        <Route
+          path="feedback/new"
+          element={<PrivateRoute element={<NewFeedback />} />}
         />
 
         {/* Admin panel (also protected by PrivateRoute + in-component admin check) */}

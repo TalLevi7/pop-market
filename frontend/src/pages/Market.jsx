@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import '../styles/Market.css';
 
 export default function Market() {
@@ -11,17 +12,24 @@ export default function Market() {
   // — Authentication check (JWT in localStorage) —
   const token = localStorage.getItem('token');
   let isAuthenticated = false;
-  if (token) {
+  let currentUserId = null;
+
+  // helper to decode JWT payload
+  const decodeJWTPayload = (t) => {
     try {
-      const payload = JSON.parse(
-        atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
-      );
-      if (payload.exp > Math.floor(Date.now() / 1000)) {
-        isAuthenticated = true;
-      } else {
-        localStorage.removeItem('token');
-      }
+      const base64 = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(base64));
     } catch {
+      return null;
+    }
+  };
+
+  if (token) {
+    const payload = decodeJWTPayload(token);
+    if (payload && payload.exp > Math.floor(Date.now() / 1000)) {
+      isAuthenticated = true;
+      currentUserId = payload.user_id; // ← grab user_id for self-check
+    } else {
       localStorage.removeItem('token');
     }
   }
@@ -230,13 +238,15 @@ export default function Market() {
       ) : (
         <div className="market-grid">
           {sorted.map(item => {
+            // parse avg_rating from string → number
+            const avg = parseFloat(item.avg_rating) || 0;
             const imgs = [
               item.market_picture,
               item.market_picture2,
               item.market_picture3
             ].filter(u => u);
             const total = imgs.length || 1;
-            if (imgs.length === 0) imgs.push('/default-pop.png');
+            if (!imgs.length) imgs.push('/default-pop.png');
             const idx = currentIdx[item.market_id] || 0;
 
             return (
@@ -280,10 +290,56 @@ export default function Market() {
                 <div className="market-card-footer">
                   <p className="seller-info"><strong>Seller:</strong> {item.seller_username}</p>
                   <p className="seller-contact"><strong>Email:</strong> {item.seller_email}</p>
-                  {item.seller_phone != null && item.seller_phone !== '' && (
+                  {item.seller_phone && (
                     <p className="seller-contact">
                       <strong>Phone Number:</strong> {item.seller_phone}
                     </p>
+                  )}
+
+                  {/* ★ Rating summary with Reviews link */}
+                  {item.review_count > 0 ? (
+                    <div className="rating-summary">
+                      <a
+                        className="reviews-link"
+                        onClick={() => window.open(`/seller/${item.seller_id}/reviews`, '_blank')}
+                      >
+                        Seller Reviews
+                      </a>
+                      :&nbsp;
+                      {Array.from({ length: 5 }, (_, i) => {
+                        const starNum = i + 1;
+                        if (avg >= starNum) {
+                          return <FaStar key={i} />;
+                        } else if (avg >= starNum - 0.5) {
+                          return <FaStarHalfAlt key={i} />;
+                        } else {
+                          return <FaRegStar key={i} />;
+                        }
+                      })}
+                      &nbsp;({avg.toFixed(1)})
+                    </div>
+                  ) : (
+                    <div className="rating-summary">
+                      <a
+                        className="reviews-link"
+                        onClick={() => window.open(`/seller/${item.seller_id}/reviews`, '_blank')}
+                      >
+                        Reviews
+                      </a>
+                      : No reviews yet
+                    </div>
+                  )}
+
+                  {/* Leave Feedback */}
+                  {isAuthenticated && currentUserId !== item.seller_id && (
+                    <button
+                      className="leave-feedback"
+                      onClick={() =>
+                        window.open(`/feedback/new?market_id=${item.market_id}`, '_blank')
+                      }
+                    >
+                      Leave Feedback
+                    </button>
                   )}
                 </div>
               </div>
