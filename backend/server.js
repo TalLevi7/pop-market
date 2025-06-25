@@ -51,7 +51,7 @@ app.post('/api/login', login);
 
 
 
-// Fetch 5 latest active items in Market
+// Fetch 6 latest active items in Market
 app.get('/api/latest_market', async (req, res) => {
   const sql = `
     SELECT m.*, p.pop_name, p.picture
@@ -59,7 +59,7 @@ app.get('/api/latest_market', async (req, res) => {
     JOIN pop_catalog p ON m.pop_id = p.pop_id
     WHERE m.status = 'active'
     ORDER BY m.market_id DESC
-    LIMIT 5
+    LIMIT 6
   `;
   try {
     const [results] = await db.query(sql);

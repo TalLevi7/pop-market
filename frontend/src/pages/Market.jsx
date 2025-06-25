@@ -116,10 +116,10 @@ export default function Market() {
     return copy;
   }, [filtered, orderBy]);
 
-  // — Restrict posting/management —
+  // — Restrict posting —
   const handleRestricted = page => {
     if (!isAuthenticated) {
-      alert(`Access to the ${page} page requires you to log in.`);
+      alert(`Only registered users can post Market Ads.`);
       navigate('/login');
     }
   };
@@ -221,16 +221,18 @@ export default function Market() {
             </button>
           </Link>
 
-          {/* NEW Manage Listings button */}
-          <Link to="/ManageListings">
-            <button
-              className="post-ad-button"
-              onClick={() => handleRestricted('ManageListings')}
-              style={{ marginLeft: '1rem', backgroundColor: '#6c757d' }}
-            >
-              Manage Listings
-            </button>
-          </Link>
+          {/* 'Manage Listings' button for signed in users only */}
+          {isAuthenticated && (
+            <Link to="/ManageListings">
+              <button
+                className="post-ad-button"
+                onClick={() => handleRestricted('ManageListings')}
+                style={{ marginLeft: '1rem', backgroundColor: '#6c757d' }}
+              >
+                Manage Listings
+              </button>
+            </Link>
+          )}
         </div>
       </div>
 
