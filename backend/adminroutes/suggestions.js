@@ -5,7 +5,7 @@ const router       = express.Router();
 const authenticate = require('../authenticate');
 const db           = require('../db');
 
-// ─── Restrict to logged-in admins ──────────────────────────────────────────
+// ------- Restrict to logged-in admins ------------------------
 router.use(authenticate);
 router.use((req, res, next) => {
   if (!req.user.is_admin) {
@@ -14,7 +14,7 @@ router.use((req, res, next) => {
   next();
 });
 
-// ─── GET pending suggestions ────────────────────────────────────────────────
+// ---- GET pending suggestions --------------------------
 router.get('/', async (req, res) => {
   try {
     const [rows] = await db.execute(
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ─── PATCH accept/reject ───────────────────────────────────────────────────
+// ---------- PATCH accept/reject suggestions -----------------
 router.patch('/:id', async (req, res) => {
   const suggestionId = parseInt(req.params.id, 10);
   const { action }   = req.body; // expect "accept" or "reject"

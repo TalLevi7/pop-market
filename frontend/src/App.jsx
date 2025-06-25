@@ -51,7 +51,7 @@ function App() {
         <Route path="suggest" element={<PopSuggestions />} />
         <Route path="seller/:sellerId/reviews" element={<SellerReviews />} />
 
-        {/* Protect routes with PrivateRoute */}
+        {/* Signed in users only - Protect routes with PrivateRoute */}
         <Route 
           path="collection" 
           element={<PrivateRoute element={<Collection />} />} 
@@ -80,7 +80,7 @@ function App() {
            path="catalog/ai-suggestions" 
            element={<PrivateRoute element={<AiSuggestions />} />} 
         />
-        {/* Admin panel (also protected by PrivateRoute + in-component admin check) */}
+        {/* Admin panel (protected by PrivateRoute + in-component admin check) */}
         <Route 
           path="admin" 
           element={<PrivateRoute element={<AdminPanel />} />} 

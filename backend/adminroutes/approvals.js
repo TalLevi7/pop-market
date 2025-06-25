@@ -65,7 +65,7 @@ router.patch('/:id', async (req, res) => {
         );
       }
     } else {
-      // Reject → mark as removed
+      // Reject - mark as removed
       await db.execute(
         `UPDATE market
            SET status = 'removed'

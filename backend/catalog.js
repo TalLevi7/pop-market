@@ -15,11 +15,11 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ---------- Cosine algorithm AI  recommendations -----------------------------------
+// ---------- Cosine algorithm for AI recommendations -----------------------------------
 router.get('/ai-suggestions', authenticate, async (req, res) => {
   const userId = req.user.id;
   try {
-    // 1) get user’s owned pop_ids
+    // 1) get user’s owned pop_ids from personal_collection
     const [owned] = await db.execute(
       'SELECT pop_id FROM personal_collection WHERE user_id = ?',
       [userId]
@@ -29,14 +29,14 @@ router.get('/ai-suggestions', authenticate, async (req, res) => {
       return res.json([]); // no data to compare
     }
 
-    // 2) load all pops
+    // 2) load all pops from pop_catalog
     const [allPops] = await db.query(`
       SELECT pop_id, pop_name, serial_number, category, sub_category,
              picture, release_year
       FROM pop_catalog
     `);
 
-    // 3) build vocabulary of categories & sub-cats
+    // 3) build vocabulary of categorym sub-category and release-year
     const cats   = [...new Set(allPops.map(p => p.category))];
     const subs   = [...new Set(allPops.map(p => p.sub_category))];
     const years  = allPops.map(p => p.release_year || 0);
@@ -74,10 +74,10 @@ router.get('/ai-suggestions', authenticate, async (req, res) => {
       return { ...p, score: sum/ownedIds.length };
     });
 
-    // 6) sort desc & return top5 (we strip the score)
+    // 6) sort desc & return top10 (we strip the score)
     scored.sort((a,b)=>b.score - a.score);
-    const top5 = scored.slice(0,5).map(({score, ...pop}) => pop);
-    res.json(top5);
+    const top10 = scored.slice(0,10).map(({score, ...pop}) => pop);
+    res.json(top10);
 
   } catch(err) {
     console.error('AI suggestions error:', err);

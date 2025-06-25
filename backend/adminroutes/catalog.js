@@ -4,7 +4,7 @@ const router = express.Router();
 const db = require('../db');
 
 // GET /api/admin/catalog
-// List all catalog entries (now with picture)
+// List all catalog entries including picture
 router.get('/', async (req, res) => {
   try {
     const [rows] = await db.execute(`
@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/admin/catalog/:id
-// Edit an existing Funko Pop (incl. picture)
+// Edit an existing Funko Pop
 router.put('/:id', async (req, res) => {
   const popId = parseInt(req.params.id, 10);
   const {

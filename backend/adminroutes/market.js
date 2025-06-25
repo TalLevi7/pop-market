@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// GET all listings (any status), now including seller info
+// GET all listings (any status), including seller info
 router.get('/', async (req, res) => {
   try {
     const [rows] = await db.execute(`
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// PUT → update price/location/details
+// PUT - update price/location/details
 router.put('/:id', async (req, res) => {
   const marketId = parseInt(req.params.id, 10);
   const { price, location, details } = req.body;
@@ -50,7 +50,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE → remove the listing
+// DELETE - remove the listing
 router.delete('/:id', async (req, res) => {
   const marketId = parseInt(req.params.id, 10);
   try {

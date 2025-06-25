@@ -16,13 +16,13 @@ const s3 = new S3Client({
   },
 });
 
-// multer for optional image upload (in memory)
+// multer for optional image upload
 const upload = multer({ storage: multer.memoryStorage() });
 
 // POST /api/suggestions
-// Accepts both guests and logged-in users (if Bearer token is present)
+// Accepts both guests and logged-in users
 router.post('/', upload.single('image'), async (req, res) => {
-  // 1) optional auth: decode JWT if provided
+  // decode JWT if provided
   let userId = null;
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -31,7 +31,7 @@ router.post('/', upload.single('image'), async (req, res) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       userId = decoded.user_id;
     } catch (err) {
-      // invalid token → treat as guest
+      // invalid token - treat as guest
     }
   }
 

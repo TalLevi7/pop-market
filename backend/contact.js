@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       userId = decoded.user_id;
     } catch (e) {
-      // invalid token → treat as anonymous
+      // invalid token - treat as anonymous
     }
   }
 

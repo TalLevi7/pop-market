@@ -1,8 +1,8 @@
 // routes/wishlist.js
 const express = require('express');
 const router = express.Router();
-const db = require('./db');           // your MySQL connection/export
-const authenticate = require('./authenticate'); // your auth middleware
+const db = require('./db');           
+const authenticate = require('./authenticate'); 
 
 // GET /api/collection
 router.get('/', authenticate, async (req, res) => {
@@ -44,7 +44,7 @@ router.post('/', authenticate, async (req, res) => {
     res.json({ message: 'Added to wishlist' });
 
   } catch (err) {
-    // If you want to catch a duplicate‐entry error:
+    // catch a duplicate‐entry error:
     if (err.code === 'ER_DUP_ENTRY') {
       return res.status(409).json({ error: 'Already in your wishlist' });
     }
@@ -67,7 +67,7 @@ router.delete('/:pop_id', authenticate, async (req, res) => {
     );
 
     if (result.affectedRows === 0) {
-      // No rows deleted → either wrong pop_id or not this user’s item
+      // No rows deleted - either wrong pop_id or not this user’s item
       return res.status(404).json({ error: 'Item not found in your wishlist' });
     }
 

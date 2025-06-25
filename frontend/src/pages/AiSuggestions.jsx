@@ -111,7 +111,7 @@ export default function AiSuggestions() {
 
   return (
     <main className="as-container">
-      <h1>Your AI Recommendations</h1>
+      <h1>Your AI Recommendations </h1> <h3>(based on your current collection)</h3>
 
       {items.length === 0
         ? <p className="as-none">Add more to your collection to get suggestions!</p>
@@ -130,9 +130,9 @@ export default function AiSuggestions() {
                   <img src={p.picture} alt={p.pop_name} />
                   <h3>{p.pop_name}</h3>
                   <h4>{p.serial_number}</h4>
-                  <p><strong>Cat:</strong> {p.category}</p>
-                  <p><strong>Sub:</strong> {p.sub_category}</p>
-                  <p><strong>Year:</strong> {p.release_year}</p>
+                  <p><strong>Category:</strong> {p.category}</p>
+                  <p><strong>Sub-Category:</strong> {p.sub_category}</p>
+                  <p><strong>Release-Year:</strong> {p.release_year}</p>
                   <button
                     className="as-add-button"
                     disabled={inCol}

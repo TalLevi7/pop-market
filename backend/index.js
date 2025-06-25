@@ -1,3 +1,4 @@
+// index.js page for multer purposes - storing images in amazon S3 bucket
 require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
