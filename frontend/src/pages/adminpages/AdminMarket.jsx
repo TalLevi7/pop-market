@@ -1,4 +1,5 @@
 // src/pages/adminpages/AdminMarket.jsx
+// This is a page in the admin's panel in which he can manage ads in the market - remove, edit, etc..
 
 import React, { useState, useEffect, useMemo } from 'react';
 import '../../styles/AdminMarket.css';

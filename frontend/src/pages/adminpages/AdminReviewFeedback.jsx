@@ -1,5 +1,5 @@
 // src/pages/adminpages/AdminReviewFeedback.jsx
-
+// This is a page in the admin's panel in which he can review + approve / disapprove feedback users give to each other in the market
 import React, { useState, useEffect } from 'react';
 import '../../styles/AdminReviewFeedback.css';
 

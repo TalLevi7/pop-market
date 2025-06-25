@@ -1,4 +1,5 @@
 // src/pages/adminpages/AdminContactMessages.jsx
+// This is a page in the admin's panel in which he can review the messages sent through the 'Contact Us' page
 
 import React, { useState, useEffect } from 'react';
 import '../../styles/AdminContactMessages.css';

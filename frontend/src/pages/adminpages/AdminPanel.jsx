@@ -1,3 +1,5 @@
+// This is the admin's panel from which he manages the whole website
+
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../styles/AdminPanel.css';

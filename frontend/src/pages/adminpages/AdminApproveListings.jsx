@@ -1,4 +1,5 @@
 // src/pages/adminpages/AdminApproveListings.jsx
+// This is a page in the admin's panel in which he can review + approve / disapprove new Market listings
 
 import React, { useState, useEffect } from 'react';
 import '../../styles/AdminApproveListings.css';

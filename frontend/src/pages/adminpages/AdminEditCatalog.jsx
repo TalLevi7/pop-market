@@ -1,4 +1,5 @@
 // src/pages/adminpages/AdminEditCatalog.jsx
+// This is a page in the admin's panel in which he can manage the catalog page - add new POPs, editing / removing existing ones, etc..
 
 import React, { useState, useEffect } from 'react';
 import '../../styles/AdminEditCatalog.css';

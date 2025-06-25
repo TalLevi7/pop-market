@@ -1,4 +1,5 @@
 // src/pages/adminpages/AdminPopSuggestions.jsx
+// This is a page in the admin's panel in which he can review the POPs users suggested adding to the catalog
 
 import React, { useState, useEffect } from 'react';
 import '../../styles/AdminPopSuggestions.css';

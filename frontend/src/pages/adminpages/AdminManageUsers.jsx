@@ -1,4 +1,5 @@
 // src/pages/adminpages/AdminManageUsers.jsx
+// This is a page in the admin's panel in which he can review + manage all the users signed up to the website, including editing their details or banning a user
 
 import React, { useState, useEffect } from 'react';
 import '../../styles/AdminManageUsers.css';
