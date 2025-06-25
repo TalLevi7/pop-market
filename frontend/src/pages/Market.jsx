@@ -79,9 +79,12 @@ export default function Market() {
   const filtered = useMemo(
     () =>
       listings.filter(item => {
+        const txt = searchText.toLowerCase();
+        const name = (item.pop_name || '').toLowerCase();
+        const details = (item.details || '').toLowerCase();
+
         const matchesSearch =
-          item.pop_name.toLowerCase().includes(searchText.toLowerCase()) ||
-          item.details.toLowerCase().includes(searchText.toLowerCase());
+          name.includes(txt) || details.includes(txt);
         const matchesCategory =
           !categoryFilter || item.category === categoryFilter;
         const matchesLocation =
@@ -280,7 +283,7 @@ export default function Market() {
                   <p className="pop-price">₪{parseFloat(item.price).toFixed(2)}</p>
                   <p className="pop-date">
                     <strong>Uploaded:</strong>{' '}
-                    {new Date(item.date_uploaded).toLocaleDateString('en-IL',{
+                    {new Date(item.date_uploaded).toLocaleDateString('en-IL', {
                       year:'numeric',month:'short',day:'numeric'
                     })}
                   </p>

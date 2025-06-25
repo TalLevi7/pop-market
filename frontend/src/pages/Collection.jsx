@@ -1,6 +1,6 @@
 // src/pages/Collection.jsx
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';  // ← added Link
 import '../styles/Collection.css';
 
@@ -57,8 +57,29 @@ export default function Collection() {
     }
   };
 
-  const categories    = [...new Set(items.map(i => i.category))];
-  const subCategories = [...new Set(items.map(i => i.sub_category))];
+  // Derive category list, scoped by selected sub-category
+  const categories = useMemo(
+    () => Array.from(
+      new Set(
+        items
+          .filter(i => !filterSub || i.sub_category === filterSub)
+          .map(i => i.category)
+      )
+    ),
+    [items, filterSub]
+  );
+
+  // Derive sub-category list, scoped by selected category
+  const subCategories = useMemo(
+    () => Array.from(
+      new Set(
+        items
+          .filter(i => !filterCategory || i.category === filterCategory)
+          .map(i => i.sub_category)
+      )
+    ),
+    [items, filterCategory]
+  );
 
   const filtered = items
     .filter(i => i.pop_name.toLowerCase().includes(search.toLowerCase()))

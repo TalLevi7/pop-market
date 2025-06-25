@@ -1,4 +1,5 @@
 // src/pages/Catalog.jsx
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';        // ← still used for wishlist/collection redirects
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
@@ -11,6 +12,7 @@ function Catalog() {
   const [searchText, setSearchText]         = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [subCategoryFilter, setSubCategoryFilter] = useState('');
+  const [sortBy, setSortBy]                 = useState(''); // ← new sort state
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -26,7 +28,6 @@ function Catalog() {
 
   // 2. Load wishlist (pop_id array) on mount (requires auth)
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (!token) return;
     fetch(`${API_URL}/api/wishlist`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -40,11 +41,10 @@ function Catalog() {
         setWishlist(popIds);
       })
       .catch(console.error);
-  }, [API_URL]);
+  }, [API_URL, token]);
 
   // 3. Load user’s collectionIds (pop_id) on mount (requires auth)
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (!token) return;
     fetch(`${API_URL}/api/collection`, {
       headers: {
@@ -61,37 +61,62 @@ function Catalog() {
         setCollectionIds(popIds);
       })
       .catch(console.error);
-  }, [API_URL]);
+  }, [API_URL, token]);
 
-  // 4. Build category/sub‐category lists and apply filters
+  // 4. Build dynamic category/sub‐category lists based on each other
   const categories = useMemo(
-    () => Array.from(new Set(catalogData.map(p => p.category))),
-    [catalogData]
+    () => Array.from(
+      new Set(
+        catalogData
+          .filter(p => !subCategoryFilter || p.sub_category === subCategoryFilter)
+          .map(p => p.category)
+      )
+    ).sort(),
+    [catalogData, subCategoryFilter]
   );
   const subCategories = useMemo(
-    () => Array.from(new Set(catalogData.map(p => p.sub_category))),
-    [catalogData]
+    () => Array.from(
+      new Set(
+        catalogData
+          .filter(p => !categoryFilter || p.category === categoryFilter)
+          .map(p => p.sub_category)
+      )
+    ).sort(),
+    [catalogData, categoryFilter]
   );
+
+  // 5. Apply search & both filters
   const filtered = useMemo(
     () =>
       catalogData.filter(p => {
-        return (
-          p.pop_name.toLowerCase().includes(searchText.toLowerCase()) &&
-          (!categoryFilter || p.category === categoryFilter) &&
-          (!subCategoryFilter || p.sub_category === subCategoryFilter)
-        );
+        const matchesText = p.pop_name
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+        const matchesCat = !categoryFilter || p.category === categoryFilter;
+        const matchesSub = !subCategoryFilter || p.sub_category === subCategoryFilter;
+        return matchesText && matchesCat && matchesSub;
       }),
     [catalogData, searchText, categoryFilter, subCategoryFilter]
   );
 
-  // 5. Toggle wishlist item (add/remove)
+  // 6. Sort the filtered list
+  const sortedList = useMemo(() => {
+    const arr = [...filtered];
+    if (sortBy === 'year') {
+      // newest first
+      arr.sort((a, b) => b.release_year - a.release_year);
+    } else if (sortBy === 'alpha') {
+      arr.sort((a, b) => a.pop_name.localeCompare(b.pop_name));
+    }
+    return arr;
+  }, [filtered, sortBy]);
+
+  // 7. Toggle wishlist item (add/remove)
   const toggleWishlist = async popId => {
-    const token = localStorage.getItem('token');
     if (!token) {
       alert('You must be logged in to add items to wishlist');
       return navigate('/login');
     }
-
     const inList = wishlist.includes(popId);
     const url = `${API_URL}/api/wishlist${inList ? '/' + popId : ''}`;
     const method = inList ? 'DELETE' : 'POST';
@@ -103,7 +128,6 @@ function Catalog() {
       },
       ...(method === 'POST' && { body: JSON.stringify({ pop_id: popId }) })
     };
-
     const res = await fetch(url, opts);
     if (!res.ok) {
       let errText = 'Wishlist update failed';
@@ -114,25 +138,21 @@ function Catalog() {
       alert(errText);
       return;
     }
-
     setWishlist(w =>
       inList ? w.filter(id => id !== popId) : [...w, popId]
     );
   };
 
-  // 6. Add to collection (with duplicate check and success alert)
+  // 8. Add to collection (with duplicate check and success alert)
   const handleAddToCollection = async (popId, popName) => {
-    const token = localStorage.getItem('token');
     if (!token) {
       alert(`Login required to add ${popName}`);
       return navigate('/login');
     }
-
     if (collectionIds.includes(popId)) {
       alert(`${popName} is already in your collection`);
       return;
     }
-
     const res = await fetch(`${API_URL}/api/collection`, {
       method: 'POST',
       headers: {
@@ -141,7 +161,6 @@ function Catalog() {
       },
       body: JSON.stringify({ pop_id: popId })
     });
-
     if (res.ok) {
       setCollectionIds(prev => [...prev, popId]);
       alert(`${popName} has been added to your collection`);
@@ -156,7 +175,7 @@ function Catalog() {
     }
   };
 
-    // 7. Navigate to AI Suggestions
+  // 9. Navigate to AI Suggestions
   const goAi = () => {
     if (!token) {
       alert('Login required to get AI suggestions');
@@ -200,7 +219,22 @@ function Catalog() {
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
+                  {/* Sort control */}
+        <div className="catalog-sort">
+          <label htmlFor="sortSelect">Sort by: </label>
+          <select
+            id="sortSelect"
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+          >
+            <option value="">None</option>
+            <option value="year">Release-Year</option>
+            <option value="alpha">A – Z</option>
+          </select>
         </div>
+        </div>
+
+
         <div className="catalog-buttons">
           <button className="ai-suggest-button" onClick={goAi}>
             AI Based Suggestions ✨
@@ -213,12 +247,12 @@ function Catalog() {
             Missing anything?
           </button>
         </div>
+
         {/* Catalog Grid */}
         <div className="catalog-grid">
-          {filtered.map(pop => {
+          {sortedList.map(pop => {
             const id = pop.pop_id || pop.id;
             const isFav = wishlist.includes(id);
-
             return (
               <div className="pop-card" key={id}>
                 {/* Heart icon for wishlist */}
