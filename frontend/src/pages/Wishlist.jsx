@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+// src/pages/Wishlist.jsx
+
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Wishlist.css';
 
@@ -116,13 +118,36 @@ export default function Wishlist() {
     }
   };
 
-  // derive filter options
-  const categories    = Array.from(new Set(items.map(i => i.category)));
-  const subCategories = Array.from(new Set(items.map(i => i.sub_category)));
+  // derive filter options, scoped to each other
+  const categories = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          items
+            .filter(i => !filterSub || i.sub_category === filterSub)
+            .map(i => i.category)
+        )
+      ),
+    [items, filterSub]
+  );
+
+  const subCategories = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          items
+            .filter(i => !filterCategory || i.category === filterCategory)
+            .map(i => i.sub_category)
+        )
+      ),
+    [items, filterCategory]
+  );
 
   // apply search & filters
   const filtered = items
-    .filter(i => i.pop_name.toLowerCase().includes(search.toLowerCase()))
+    .filter(i =>
+      i.pop_name.toLowerCase().includes(search.toLowerCase())
+    )
     .filter(i => !filterCategory || i.category === filterCategory)
     .filter(i => !filterSub      || i.sub_category === filterSub);
 
@@ -156,13 +181,23 @@ export default function Wishlist() {
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
+        <select
+          value={filterCategory}
+          onChange={e => setFilterCategory(e.target.value)}
+        >
           <option value="">All Categories</option>
-          {categories.map(c => <option key={c} value={c}>{c}</option>)}
+          {categories.map(c => (
+            <option key={c} value={c}>{c}</option>
+          ))}
         </select>
-        <select value={filterSub} onChange={e => setFilterSub(e.target.value)}>
+        <select
+          value={filterSub}
+          onChange={e => setFilterSub(e.target.value)}
+        >
           <option value="">All Sub-Categories</option>
-          {subCategories.map(s => <option key={s} value={s}>{s}</option>)}
+          {subCategories.map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
         </select>
       </div>
 
