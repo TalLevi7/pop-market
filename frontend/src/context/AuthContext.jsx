@@ -1,4 +1,6 @@
 // src/context/AuthContext.jsx
+// Page to verify a signed in user through JWToken
+
 import React, { createContext, useState, useEffect } from 'react';
 
 // Create context

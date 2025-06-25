@@ -1,3 +1,5 @@
+// This is the Footer seen across all pages at the BOTTOM of each page
+
 import React from 'react';
 import { Link } from 'react-router-dom'; //React Router
 import '../styles/Common.css'; // Custom styles for footer

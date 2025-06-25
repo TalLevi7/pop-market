@@ -1,4 +1,5 @@
 // src/components/Navbar.jsx
+// This is the Navigation bar seen across all pages at the TOP of each page
 
 import React, { useState, useContext } from 'react'; 
 import { Link, useNavigate } from 'react-router-dom'; // React Router
