@@ -1,5 +1,6 @@
 // src/pages/Catalog.jsx
-
+// Shows the whole pop catalog, with search / order-by options
+// Signed-in users can also receive POP-suggestions based on an implemented AI Algorithm using their current collection as suggestion base
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';        // ← still used for wishlist/collection redirects
 import { FaHeart, FaRegHeart } from 'react-icons/fa';

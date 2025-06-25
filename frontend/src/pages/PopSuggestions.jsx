@@ -1,4 +1,5 @@
 // src/pages/PopSuggestion.jsx
+// Form-Page for users to suggest new POPs to add to the catalog
 
 import React, { useState } from 'react';
 import { useNavigate }  from 'react-router-dom';

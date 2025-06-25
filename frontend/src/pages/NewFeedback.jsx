@@ -1,4 +1,5 @@
 // src/pages/NewFeedback.jsx
+// Page for signed-in users to leave feedback on sellers they dealt with
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';

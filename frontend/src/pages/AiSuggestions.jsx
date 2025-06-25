@@ -1,3 +1,5 @@
+// AI calculated suggestions for users, based on their current collection and interests
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link }         from 'react-router-dom';
 import { FaHeart, FaRegHeart }       from 'react-icons/fa';

@@ -1,4 +1,6 @@
 // src/pages/NewListing.jsx
+// Form-Page for users to upload a new Market Ad - List a POP for sale
+// Users can select to either sell a POP existing in the catalog, or a POP that isn't in the catalog which then will be added + edited by Admin
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';

@@ -1,5 +1,5 @@
 // src/pages/ContactUs.jsx
-
+// Contact Us page for users to contact the website's management for any reason
 import React, { useState, useEffect } from 'react';
 import '../styles/ContactUs.css';
 

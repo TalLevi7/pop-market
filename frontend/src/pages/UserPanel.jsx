@@ -1,5 +1,5 @@
 // src/pages/UserPanel.jsx
-
+// User Panel for a user to edit his details / select preferences
 import React, { useState, useEffect } from 'react';
 import '../styles/UserPanel.css';
 

@@ -1,4 +1,5 @@
 // src/pages/Wishlist.jsx
+// Wishlist page - shows all the pops in a user's wishlist
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';

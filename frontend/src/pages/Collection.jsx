@@ -1,4 +1,5 @@
 // src/pages/Collection.jsx
+// Show's a signed-in user's collection
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';  // ← added Link

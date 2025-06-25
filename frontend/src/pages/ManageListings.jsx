@@ -1,3 +1,4 @@
+// A page for a Seller - Signed in User to manage his market Ads
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/ManageListings.css';

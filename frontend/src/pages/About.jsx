@@ -1,5 +1,5 @@
 // src/pages/About.jsx
-
+// 'About' page
 import React from 'react';
 import '../styles/About.css';  // Create this CSS for styling
 

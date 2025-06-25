@@ -1,3 +1,4 @@
+// Login page - Upon successful log in, stores the user's details in a JWToken
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';  // Import Link here
 import { AuthContext } from '../context/AuthContext'; // Import AuthContext

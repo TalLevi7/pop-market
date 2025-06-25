@@ -1,4 +1,5 @@
 // src/pages/Signup.jsx
+// Signup page - Including both frontend and backend verifications. Using bcrypt to hash password and stores the hashed password in DB
 import React, { useState } from 'react'; 
 import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Signup.css';

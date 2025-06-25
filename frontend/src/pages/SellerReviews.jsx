@@ -1,4 +1,5 @@
 // src/pages/SellerReviews.jsx
+// A page that shows a seller reviews on the market
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
