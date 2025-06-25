@@ -1,4 +1,4 @@
-/* 1. Outer wrapper: row layout with centered items */
+/* Outer wrapper: row layout with centered items */
 .login-page {
   display: flex;
   align-items: center;      /* vertical centering */
@@ -8,7 +8,7 @@
   box-sizing: border-box;
 }
 
-/* 2. Side images: fixed width, maintain aspect ratio */
+/* Side images: fixed width, maintain aspect ratio */
 .login-side-image {
   flex-shrink: 0;
   width: 320px;     /* adjust up/down to taste */
@@ -17,7 +17,7 @@
   margin: 0 20px;
 }
 
-/* 3. Main container (your existing styles) */
+/* Main container (your existing styles) */
 .login-container {
   max-width: 400px;
   padding: 20px;
@@ -85,7 +85,7 @@
   text-decoration: underline;
 }
 
-/* 4. Responsive fallback: stack vertically on narrow screens */
+/* Responsive fallback: stack vertically on narrow screens */
 @media (max-width: 600px) {
   .login-page {
     flex-direction: column;

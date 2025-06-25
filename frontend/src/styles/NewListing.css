@@ -1,6 +1,6 @@
 /* src/styles/NewListing.css */
 
-/* ─── Container & Title ───────────────────────────────────────────────────── */
+/* Container & Title */
 .newlisting-container {
   max-width: 600px;
   margin: 2rem auto;
@@ -19,7 +19,7 @@
   text-align: center;
 }
 
-/* ─── Error message ───────────────────────────────────────────────────────── */
+/* Error message */
 .newlisting-error {
   background-color: #ffe6e6;
   color: #cc0000;
@@ -30,7 +30,7 @@
   text-align: center;
 }
 
-/* ─── Form layout ─────────────────────────────────────────────────────────── */
+/* Form layout */
 .newlisting-form {
   display: flex;
   flex-direction: column;
@@ -64,7 +64,7 @@
   box-sizing: border-box;
 }
 
-/* ─── Combined searchable dropdown ───────────────────────────────────────── */
+/* Combined searchable dropdown */
 .pop-dropdown {
   position: relative;
 }
@@ -100,7 +100,7 @@
   background-color: #f0f0f0;
 }
 
-/* ─── Display chosen serial number ───────────────────────────────────────── */
+/* Display chosen serial number */
 .serial-display {
   display: flex;
   align-items: center;
@@ -130,7 +130,7 @@
   border-color: #66afe9;
 }
 
-/* ─── Submit Button ───────────────────────────────────────────────────────── */
+/* Submit Button */
 .newlisting-submit-button {
   background-color: #28a745; /* same green as Post an Ad button */
   color: #fff;
@@ -152,7 +152,7 @@
   cursor: not-allowed;
 }
 
-/* ─── Responsive tweaks ───────────────────────────────────────────────────── */
+/* Responsive tweaks */
 @media (max-width: 480px) {
   .newlisting-container {
     margin: 1rem;

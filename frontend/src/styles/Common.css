@@ -22,10 +22,10 @@
 }
 
 .navbar-greeting {
-  margin-right: 0.5rem; /* adjust as needed */
+  margin-right: 0.5rem;
   font-size: large;
   font-weight: bold;
-  color: #3700ff; /* or any color you prefer */
+  color: #3700ff;
 }
 
 .logo {
@@ -39,16 +39,16 @@
 .navbar ul {
   list-style: none;
   display: flex;
-  align-items: center;  /* <-- THIS centers li contents vertically */
+  align-items: center; 
   gap: 70px;
   margin: 20px;
   padding: 0;
-  height: 100%;          /* ensure it takes full navbar height */
+  height: 100%;         
 }
 
 .navbar ul li {
   display: flex;
-  align-items: center;   /* center link vertically */
+  align-items: center;  
   height: 100%;
 }
 
@@ -178,7 +178,7 @@ button {
 .admin-button {
   padding: 6px 12px;
   font-size: 0.9rem;
-  background: #f0ad4e;        /* a gentle amber */
+  background: #f0ad4e;       
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -190,7 +190,7 @@ button {
   background: #ec971f;
 }
 
-/* You can adjust spacing if needed */
+
 .auth-buttons .admin-panel-icon {
   margin-right: 8px;
 }

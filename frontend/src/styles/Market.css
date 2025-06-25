@@ -1,6 +1,6 @@
 /* src/styles/Market.css */
 
-/* ─── Container ─────────────────────────────────────────────────────────── */
+/* Container */
 .market-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -10,7 +10,7 @@
   color: #333;
 }
 
-/* ─── Top Controls: Search/Filter + Order By + Post-Ad ──────────────────── */
+/* Top Controls: Search/Filter + Order By + Post-Ad */
 .market-controls {
   display: flex;
   justify-content: space-between;
@@ -42,7 +42,7 @@
   flex: 1 1 150px;
 }
 
-/* ─── Right-side wrapper for Order By + Post-Ad ─────────────────────────── */
+/* Right-side wrapper for Order By + Post-Ad */
 .market-orderpost {
   display: flex;
   align-items: center;
@@ -64,7 +64,7 @@
   background-color: #fff;
 }
 
-/* ─── “Post an Ad” Button ───────────────────────────────────────────────── */
+/* “Post an Ad” Button */
 .post-ad-button {
   background-color: #ffcc00;
   color: #fff;
@@ -79,7 +79,7 @@
   background-color: #ffb300;
 }
 
-/* ─── No Results ─────────────────────────────────────────────────────────── */
+/* No Results */
 .market-no-results {
   text-align: center;
   font-size: 1.2rem;
@@ -87,7 +87,7 @@
   margin-top: 2rem;
 }
 
-/* ─── Loading / Error ────────────────────────────────────────────────────── */
+/* Loading / Error */
 .market-loading,
 .market-error {
   text-align: center;
@@ -96,14 +96,14 @@
   margin-top: 2rem;
 }
 
-/* ─── Grid of Cards ─────────────────────────────────────────────────────── */
+/* Grid of Cards */
 .market-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
 }
 
-/* ─── Single Card ───────────────────────────────────────────────────────── */
+/* Single Card */
 .market-card {
   display: flex;
   flex-direction: column;
@@ -114,7 +114,7 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-/* ─── Card Images & Carousel ────────────────────────────────────────────── */
+/* Card Images & Carousel */
 .carousel-container {
   position: relative;
   width: 100%;
@@ -148,7 +148,7 @@
 .carousel-btn.prev { left: 8px; }
 .carousel-btn.next { right: 8px; }
 
-/* ─── Card Body ────────────────────────────────────────────────────────── */
+/* Card Body */
 .market-card-body {
   padding: 0.75rem;
   flex: 1;
@@ -180,7 +180,7 @@
   color: #333;
 }
 
-/* ─── Card Footer (Seller Info + Reviews) ──────────────────────────────── */
+/* Card Footer (Seller Info + Reviews) */
 .market-card-footer {
   background-color: #fafafa;
   padding: 0.5rem 0.75rem;
@@ -236,7 +236,7 @@
   background: #218838;
 }
 
-/* ─── Lightbox Overlay ─────────────────────────────────────────────────── */
+/* Lightbox Overlay */
 .lightbox-overlay {
   position: fixed;
   inset: 0;
@@ -277,7 +277,7 @@
   cursor: default;
 }
 
-/* ─── Responsive tweaks ─────────────────────────────────────────────────── */
+/* Responsive tweaks */
 @media (max-width: 600px) {
   .market-controls {
     flex-direction: column;

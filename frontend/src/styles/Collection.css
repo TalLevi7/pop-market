@@ -117,7 +117,7 @@
   color: #0056b3;
 }
 
-/* Sell on market button (matches catalog sellonmarket-button) */
+/* Sell on market button */
 .collection .card-actions button.collectiontomarket-button {
   background-color: #ffcc00;
   color: white;
@@ -136,7 +136,7 @@
   color: white;
 }
 
-/* Remove from collection button (matches catalog addtocollection-button) */
+/* Remove from collection button */
 .collection .card-actions button.removefromcollection-button {
   background-color: #ff4800;
   color: white;

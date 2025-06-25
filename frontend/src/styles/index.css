@@ -21,7 +21,7 @@ html, body {
 }
 
 main {
-  flex: 1; /* Takes all available space, pushing footer down */
+  flex: 1;
 }
 
 .app-container {

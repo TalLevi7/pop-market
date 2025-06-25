@@ -1,6 +1,6 @@
 /* src/styles/Signup.css */
 
-/* 1. Page layout */
+/* Page layout */
 .signup-page {
   display: flex;
   align-items: center;
@@ -9,16 +9,16 @@
   background: #f7f9fc;
 }
 
-/* 2. Side images: fixed-ish width, maintain aspect ratio */
+/* Side images: fixed-ish width, maintain aspect ratio */
 .signup-side-image {
   flex-shrink: 0;
-  width: 350px;      /* your requested fixed width */
+  width: 350px;      
   max-width: 30%;
   height: auto;
   margin: 0 20px;    /* gap between image & form */
 }
 
-/* 3. Main form container */
+/* Main form container */
 .signup-container {
   background: #fff;
   padding: 2rem;
@@ -35,7 +35,7 @@
   color: #333;
 }
 
-/* 4. Form fields */
+/* Form fields */
 .signup-form {
   display: flex;
   flex-direction: column;
@@ -54,7 +54,7 @@
   box-sizing: border-box;
 }
 
-/* 5. Help text under phone number */
+/* Help text under phone number */
 .signup-help {
   font-size: 0.85rem;
   color: #555;
@@ -62,7 +62,7 @@
   margin-bottom: 1rem;
 }
 
-/* 6. Submit button */
+/* Submit button */
 button[type="submit"] {
   padding: 0.75rem;
   font-size: 1rem;
@@ -78,13 +78,13 @@ button[type="submit"]:hover {
   background: #0056b3;
 }
 
-/* 7. Error message */
+/* Error message */
 .error {
   color: #cc0000;
   text-align: center;
 }
 
-/* 8. Login link below form */
+/* Login link below form */
 .login-text {
   text-align: center;
   margin-top: 1rem;
@@ -100,7 +100,7 @@ button[type="submit"]:hover {
   text-decoration: underline;
 }
 
-/* 9. Responsive tweak */
+/* Responsive tweak */
 @media (max-width: 768px) {
   .signup-side-image {
     display: none; /* hide side images on small screens */

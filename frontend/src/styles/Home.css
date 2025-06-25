@@ -90,7 +90,7 @@
   color: #007bff;
 }
 
-/* ─── Rotating Ads ───────────────────────────────────────────────────── */
+/* Rotating Ads */
 .ad-section {
   text-align: center;
   margin: 2rem 0;
@@ -108,7 +108,7 @@
   to   { opacity: 1; }
 }
 
-/* ─── Footer Placeholder ──────────────────────────────────────────────── */
+/* Footer Placeholder */
 .footer-placeholder {
   text-align: center;
   padding: 2rem 1rem;
@@ -116,7 +116,7 @@
   font-style: italic;
 }
 
-/* ─── Responsive tweaks ───────────────────────────────────────────────── */
+/* Responsive tweaks */
 @media (max-width: 600px) {
   .home-hero {
     height: 30vh;    /* scale down for small screens */
