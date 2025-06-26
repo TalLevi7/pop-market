@@ -52,3 +52,22 @@ logs
 
 # Misc
 .DS_Store
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+.knn_python_service/venv/
+.knn_venv/
+*.venv/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
