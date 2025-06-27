@@ -11,6 +11,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// updates catalog prices every 24 hours
+require('./api/updateApiPrices');
+
 // ---------------------
 // Routes
 // ---------------------

@@ -8,7 +8,7 @@ import '../styles/Catalog.css';
 
 function Catalog() {
   const [catalogData, setCatalogData]       = useState([]);
-  const [wishlist, setWishlist]             = useState([]);       
+  const [wishlist, setWishlist]             = useState([]);
   const [collectionIds, setCollectionIds]   = useState([]);
   const [searchText, setSearchText]         = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -16,8 +16,8 @@ function Catalog() {
   const [sortBy, setSortBy]                 = useState(''); // ← new sort state
 
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-  const API_URL = import.meta.env.VITE_API_URL;
+  const token    = localStorage.getItem('token');
+  const API_URL  = import.meta.env.VITE_API_URL;
 
   // 1. Load entire catalog
   useEffect(() => {
@@ -108,6 +108,18 @@ function Catalog() {
       arr.sort((a, b) => b.release_year - a.release_year);
     } else if (sortBy === 'alpha') {
       arr.sort((a, b) => a.pop_name.localeCompare(b.pop_name));
+    } else if (sortBy === 'price_asc') {
+      arr.sort((a, b) => {
+        const aPrice = a.estimated_price != null ? parseFloat(a.estimated_price) : Infinity;
+        const bPrice = b.estimated_price != null ? parseFloat(b.estimated_price) : Infinity;
+        return aPrice - bPrice;
+      });
+    } else if (sortBy === 'price_desc') {
+      arr.sort((a, b) => {
+        const aPrice = a.estimated_price != null ? parseFloat(a.estimated_price) : -Infinity;
+        const bPrice = b.estimated_price != null ? parseFloat(b.estimated_price) : -Infinity;
+        return bPrice - aPrice;
+      });
     }
     return arr;
   }, [filtered, sortBy]);
@@ -119,9 +131,9 @@ function Catalog() {
       return navigate('/login');
     }
     const inList = wishlist.includes(popId);
-    const url = `${API_URL}/api/wishlist${inList ? '/' + popId : ''}`;
+    const url    = `${API_URL}/api/wishlist${inList ? '/' + popId : ''}`;
     const method = inList ? 'DELETE' : 'POST';
-    const opts = {
+    const opts   = {
       method,
       headers: {
         'Content-Type': 'application/json',
@@ -220,21 +232,22 @@ function Catalog() {
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
-                  {/* Sort control */}
-        <div className="catalog-sort">
-          <label htmlFor="sortSelect">Sort by: </label>
-          <select
-            id="sortSelect"
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value)}
-          >
-            <option value="">None</option>
-            <option value="year">Release-Year</option>
-            <option value="alpha">A – Z</option>
-          </select>
+          {/* Sort control */}
+          <div className="catalog-sort">
+            <label htmlFor="sortSelect">Sort by: </label>
+            <select
+              id="sortSelect"
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value)}
+            >
+              <option value="">None</option>
+              <option value="year">Release-Year</option>
+              <option value="alpha">A – Z</option>
+              <option value="price_asc">Price: Low → High</option>
+              <option value="price_desc">Price: High → Low</option>
+            </select>
+          </div>
         </div>
-        </div>
-
 
         <div className="catalog-buttons">
           <button className="ai-suggest-button" onClick={goAi}>
@@ -252,7 +265,7 @@ function Catalog() {
         {/* Catalog Grid */}
         <div className="catalog-grid">
           {sortedList.map(pop => {
-            const id = pop.pop_id || pop.id;
+            const id    = pop.pop_id || pop.id;
             const isFav = wishlist.includes(id);
             return (
               <div className="pop-card" key={id}>
@@ -270,6 +283,13 @@ function Catalog() {
                 <p><strong>Category:</strong> {pop.category}</p>
                 <p><strong>Sub-Category:</strong> {pop.sub_category}</p>
                 <p><strong>Release-Year:</strong> {pop.release_year}</p>
+                {/* Estimated price (from backend), safely formatted */}
+                <p>
+                  <strong>Estimated Price:</strong>{' '}
+                  {pop.estimated_price == null
+                    ? '—'
+                    : `$${parseFloat(pop.estimated_price).toFixed(2)}`}
+                </p>
                 <div className="card-actions">
                   <button
                     className="addtocollection-button"
