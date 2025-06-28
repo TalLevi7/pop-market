@@ -1,4 +1,8 @@
 version: 1
+build:
+  image:
+    baseImage: ubuntu_22
+    nodeVersion: 20
 frontend:
   phases:
     preBuild:
@@ -14,4 +18,4 @@ frontend:
       - '**/*'
   cache:
     paths:
-      - frontend/node_modules/**/*  
+      - frontend/node_modules/**/*
