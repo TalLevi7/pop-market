@@ -16,10 +16,14 @@ const allowedOrigins = [
   'https://www.popmarketproject.com'
 ];
 
-app.use(cors({
+const corsOptions = {
   origin: allowedOrigins,
-  credentials: true, // if using cookies or authorization headers
-}));
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
+
 
 // updates catalog prices every 24 hours
 require('./api/updateApiPrices');
@@ -85,10 +89,20 @@ app.get('/api/latest_market', async (req, res) => {
 
 
 // Global error handler (should be last middleware)
+// 500+ error handler
 app.use((err, req, res, next) => {
-  console.error('🔥 Global Error Handler:', err.stack || err);
-  res.status(500).json({ error: 'Internal Server Error', details: err.message });
+  console.error('Unhandled error', err);
+  // Ensure CORS headers in case of error
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+
+  res.status(err.status || 500).json({
+    error: err.message || 'Internal Server Error'
+  });
 });
+
 
 
 // ---------------------
