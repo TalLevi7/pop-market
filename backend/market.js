@@ -10,10 +10,10 @@ require('dotenv').config();
 
 // configure AWS SDK v3 S3 client
 const s3 = new S3Client({
-  region: process.env.AWS_REGION,
+  region: process.env.REGION,
   credentials: {
-    accessKeyId:     process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId:     process.env.ACCESS_KEY_ID,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY,
   },
 });
 
@@ -155,7 +155,7 @@ router.post(
           ContentType: file.mimetype,
         });
         await s3.send(cmd);
-        urls[i] = `https://${process.env.BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+        urls[i] = `https://${process.env.BUCKET_NAME}.s3.${process.env.REGION}.amazonaws.com/${key}`;
       }
     } catch (err) {
       console.error('S3 upload failed:', err);

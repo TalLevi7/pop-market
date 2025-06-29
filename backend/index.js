@@ -5,7 +5,7 @@ const multer = require('multer');
 const AWS = require('aws-sdk');
 
 AWS.config.update({
-  region: process.env.AWS_REGION
+  region: process.env.REGION
 });
 
 const s3 = new AWS.S3();

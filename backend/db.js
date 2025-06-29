@@ -6,11 +6,11 @@ const isAWS = process.env.USE_AWS === "true"; // Switch between AWS and Local
 
 // Create a connection pool (callback style)
 const pool = mysql.createPool({
-  host: isAWS ? process.env.AWS_DB_HOST : process.env.DB_HOST,
-  user: isAWS ? process.env.AWS_DB_USER : process.env.DB_USER,
-  password: isAWS ? process.env.AWS_DB_PASS : process.env.DB_PASS,
-  database: isAWS ? process.env.AWS_DB_NAME : process.env.DB_NAME,
-  port: isAWS ? process.env.AWS_DB_PORT : process.env.DB_PORT, // ✅ Add port
+  host: isAWS ? process.env.DB_HOST : process.env.LCL_DB_HOST,
+  user: isAWS ? process.env.DB_USER : process.env.LCL_DB_USER,
+  password: isAWS ? process.env.DB_PASS : process.env.LCL_DB_PASS,
+  database: isAWS ? process.env.DB_NAME : process.env.LCL_DB_NAME,
+  port: isAWS ? process.env.DB_PORT : process.env.LCL_DB_PORT,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0

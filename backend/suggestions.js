@@ -9,10 +9,10 @@ require('dotenv').config();
 
 // configure AWS SDK v3 S3 client
 const s3 = new S3Client({
-  region: process.env.AWS_REGION,
+  region: process.env.REGION,
   credentials: {
-    accessKeyId:     process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId:     process.env.ACCESS_KEY_ID,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY,
   },
 });
 
@@ -52,7 +52,7 @@ router.post('/', upload.single('image'), async (req, res) => {
         Body:        req.file.buffer,
         ContentType: req.file.mimetype
       }));
-      imageUrl = `https://${process.env.BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+      imageUrl = `https://${process.env.BUCKET_NAME}.s3.${process.env.REGION}.amazonaws.com/${key}`;
     } catch (err) {
       console.error('S3 upload failed:', err);
       return res.status(500).json({ error: 'Failed to upload image' });
