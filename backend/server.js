@@ -7,8 +7,8 @@ const authenticate = require('./authenticate'); // your auth middleware
 
 require('dotenv').config();
 
+
 const app = express();
-app.use(express.json());
 
 // updated cors to allow requests from different origins
 const allowedOrigins = [
@@ -23,6 +23,16 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use(cors(corsOptions));
+
+// for local running use:
+// app.use(cors())
+
+app.use(express.json());
+
+// DEBUGGING @@@@@@@@@@@@@@@@@@@@@@@@@@@@
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong');
+});
 
 
 // updates catalog prices every 24 hours
@@ -90,17 +100,12 @@ app.get('/api/latest_market', async (req, res) => {
 
 // Global error handler (should be last middleware)
 // 500+ error handler
+// after all app.use(...) routes, before app.listen()
 app.use((err, req, res, next) => {
-  console.error('Unhandled error', err);
-  // Ensure CORS headers in case of error
-  res.header('Access-Control-Allow-Origin', req.headers.origin);
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error'
-  });
+  console.error(err);
+  res.set('Access-Control-Allow-Origin', req.get('Origin') || '*');
+  res.set('Access-Control-Allow-Credentials', 'true');
+  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 
 

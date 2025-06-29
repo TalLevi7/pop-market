@@ -6,6 +6,8 @@ const mysql = require('mysql2');
 
 const isAWS = true; // Always use AWS
 
+console.log ("-RUNTIME \n -DB HOST: ", process.env.DB_HOST, "\n PASSWORD: ", process.env.DB_PASS);
+
 // Create a connection pool (callback style)
 const pool = mysql.createPool({
   host: isAWS ? process.env.DB_HOST : process.env.LCL_DB_HOST,
