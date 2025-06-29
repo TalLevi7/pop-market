@@ -10,39 +10,34 @@ const authenticate = require('./authenticate'); // your auth middleware
 
 const app = express();
 
-console.log('-RUNTIME ENVIRONMENT VARIABLES-');
-console.log('DB_HOST:', process.env.DB_HOST);
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PASS:', process.env.DB_PASS ? '***' : 'undefined');
-console.log('DB_NAME:', process.env.DB_NAME);
 
+// For debugging DB connection on production
+// app.get('/api/ping', async (req, res) => {
+//   const mysql = require('mysql2/promise');
+//   try {
+//     const conn = await mysql.createConnection({
+//       host: process.env.DB_HOST,
+//       user: process.env.DB_USER,
+//       password: process.env.DB_PASS,
+//       database: process.env.DB_NAME,
+//       port: +process.env.DB_PORT,
+//     });
+//     await conn.query('SELECT 1');
+//     await conn.end();
+//     console.log('DB connectivity successful');
+//     res.json({ status: 'OK', host: process.env.DB_HOST });
+//   } catch (e) {
+//     console.error('Ping DB failed:', e);
+//     res.status(500).json({ status: 'FAIL', error: e.message });
+//   }
+// });
 
-// DEBUGGING @@@@@@@@@@@@@@@@@@@@@@@@@@@@
-// server.js near top
-app.get('/api/ping', async (req, res) => {
-  const mysql = require('mysql2/promise');
-  try {
-    const conn = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
-      port: +process.env.DB_PORT,
-    });
-    await conn.query('SELECT 1');
-    await conn.end();
-    console.log('DB connectivity successful');
-    res.json({ status: 'OK', host: process.env.DB_HOST });
-  } catch (e) {
-    console.error('Ping DB failed:', e);
-    res.status(500).json({ status: 'FAIL', error: e.message });
-  }
-});
 
 // updated cors to allow requests from different origins
 const allowedOrigins = [
   'https://popmarketproject.com',
-  'https://www.popmarketproject.com'
+  'https://www.popmarketproject.com',
+  'http://localhost:5173'
 ];
 
 const corsOptions = {
@@ -122,17 +117,6 @@ app.get('/api/latest_market', async (req, res) => {
     console.error('Error fetching latest market items:', err);
     res.status(500).json({ error: 'Database query failed' });
   }
-});
-
-
-// Global error handler (should be last middleware)
-// 500+ error handler
-// after all app.use(...) routes, before app.listen()
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.set('Access-Control-Allow-Origin', req.get('Origin') || '*');
-  res.set('Access-Control-Allow-Credentials', 'true');
-  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 
 
