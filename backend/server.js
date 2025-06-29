@@ -7,8 +7,29 @@ const authenticate = require('./authenticate'); // your auth middleware
 
 require('dotenv').config();
 
-
 const app = express();
+
+// DEBUGGING @@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// server.js near top
+app.get('/api/ping', async (req, res) => {
+  const mysql = require('mysql2/promise');
+  try {
+    const conn = await mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
+      port: +process.env.DB_PORT,
+    });
+    await conn.query('SELECT 1');
+    await conn.end();
+    console.log('DB connectivity successful');
+    res.json({ status: 'OK', host: process.env.DB_HOST });
+  } catch (e) {
+    console.error('Ping DB failed:', e);
+    res.status(500).json({ status: 'FAIL', error: e.message });
+  }
+});
 
 // updated cors to allow requests from different origins
 const allowedOrigins = [
@@ -29,10 +50,8 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
-// DEBUGGING @@@@@@@@@@@@@@@@@@@@@@@@@@@@
-app.get('api/ping', (req, res) => {
-  res.status(200).send('pong');
-});
+
+
 
 
 // updates catalog prices every 24 hours
