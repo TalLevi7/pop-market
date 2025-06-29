@@ -11,7 +11,25 @@ frontend:
         - cd backend && npm ci && cd ..
     build:
       commands:
-        - npm run build    # runs frontend build and then postbuild.sh
+        - npm run build    # runs frontend build and postbuild.sh
+        # --- Inject all environment variables into backend/.env ---
+        - |
+          cat <<EOF > backend/.env
+          USE_AWS=${USE_AWS}
+          REGION=${REGION}
+          DB_HOST=${DB_HOST}
+          DB_PORT=${DB_PORT}
+          DB_USER=${DB_USER}
+          DB_PASS=${DB_PASS}
+          DB_NAME=${DB_NAME}
+          JWT_SECRET=${JWT_SECRET}
+          ACCESS_KEY_ID=${ACCESS_KEY_ID}
+          SECRET_ACCESS_KEY=${SECRET_ACCESS_KEY}
+          BUCKET_NAME=${BUCKET_NAME}
+          BUCKET_REGION=${BUCKET_REGION}
+          PRICECHARTING_TOKEN=${PRICECHARTING_TOKEN}
+          VITE_API_URL=${VITE_API_URL}
+          EOF
   artifacts:
     baseDirectory: .amplify-hosting
     files:
