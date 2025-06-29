@@ -84,6 +84,11 @@ app.get('/api/latest_market', async (req, res) => {
 });
 
 
+// Global error handler (should be last middleware)
+app.use((err, req, res, next) => {
+  console.error('🔥 Global Error Handler:', err.stack || err);
+  res.status(500).json({ error: 'Internal Server Error', details: err.message });
+});
 
 
 // ---------------------
