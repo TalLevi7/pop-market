@@ -2,8 +2,10 @@
 require('dotenv').config();
 const mysql = require('mysql2');
 
-const isAWS = process.env.USE_AWS === "true"; // Switch between AWS and Local
-isAWS = true;
+// const isAWS = process.env.USE_AWS === "true"; // Switch between AWS and Local
+
+const isAWS = true; // Always use AWS
+
 // Create a connection pool (callback style)
 const pool = mysql.createPool({
   host: isAWS ? process.env.DB_HOST : process.env.LCL_DB_HOST,
