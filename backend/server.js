@@ -1,11 +1,12 @@
 // server.js
 const express = require('express');
+require('dotenv').config();
 const cors = require('cors');
 const db = require('./db');               // your MySQL connection
 const jwt = require('jsonwebtoken');      // for JWT verification
 const authenticate = require('./authenticate'); // your auth middleware
 
-require('dotenv').config();
+
 
 const app = express();
 
