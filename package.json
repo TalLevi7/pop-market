@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "build": "cd frontend && npm ci && npm run build",
+    "postbuild": "bash bin/postbuild.sh"
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.832.0",
     "@aws-sdk/s3-request-presigner": "^3.824.0",
