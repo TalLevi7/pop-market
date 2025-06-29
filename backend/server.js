@@ -9,6 +9,13 @@ require('dotenv').config();
 
 const app = express();
 
+console.log('-RUNTIME ENVIRONMENT VARIABLES-');
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PASS:', process.env.DB_PASS ? '***' : 'undefined');
+console.log('DB_NAME:', process.env.DB_NAME);
+
+
 // DEBUGGING @@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // server.js near top
 app.get('/api/ping', async (req, res) => {

@@ -6,15 +6,13 @@ const mysql = require('mysql2');
 
 const isAWS = true; // Always use AWS
 
-console.log ("-RUNTIME \n DB HOST: ", process.env.DB_HOST, "\n PASSWORD: ", process.env.DB_PASS);
-
 // Create a connection pool (callback style)
 const pool = mysql.createPool({
-  host: isAWS ? process.env.DB_HOST : process.env.LCL_DB_HOST,
-  user: isAWS ? process.env.DB_USER : process.env.LCL_DB_USER,
-  password: isAWS ? process.env.DB_PASS : process.env.LCL_DB_PASS,
-  database: isAWS ? process.env.DB_NAME : process.env.LCL_DB_NAME,
-  port: isAWS ? process.env.DB_PORT : process.env.LCL_DB_PORT,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
