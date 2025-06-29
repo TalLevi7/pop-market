@@ -8,9 +8,10 @@ frontend:
     preBuild:
       commands:
         - npm ci
+        - cd backend && npm ci && cd ..
     build:
       commands:
-        - npm run build     # runs frontend build and postbuild packaging
+        - npm run build    # runs frontend build and then postbuild.sh
   artifacts:
     baseDirectory: .amplify-hosting
     files:
@@ -18,3 +19,4 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
+      - backend/node_modules/**/*

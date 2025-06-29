@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
+set -e
+
+# Clean previous build bundle
 rm -rf ./.amplify-hosting
 mkdir -p ./.amplify-hosting/compute/default
-cd backend
-npm ci
-# Copy backend
+
+# Copy backend code + dependencies
 cp -r backend/* ./.amplify-hosting/compute/default/
-cp -r backend/node_modules ./.amplify-hosting/compute/default/node_modules
-# Copy frontend build
+
+# Copy frontend build output
 cp -r frontend/dist ./.amplify-hosting/static
-# Copy manifest
+
+# Copy routing manifest
 cp deploy-manifest.json ./.amplify-hosting/deploy-manifest.json
