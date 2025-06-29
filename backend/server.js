@@ -9,7 +9,17 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+// updated cors to allow requests from different origins
+const allowedOrigins = [
+  'https://popmarketproject.com',
+  'https://www.popmarketproject.com'
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true, // if using cookies or authorization headers
+}));
 
 // updates catalog prices every 24 hours
 require('./api/updateApiPrices');
