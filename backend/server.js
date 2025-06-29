@@ -37,7 +37,6 @@ const app = express();
 const allowedOrigins = [
   'https://popmarketproject.com',
   'https://www.popmarketproject.com',
-  'http://localhost:5173'
 ];
 
 const corsOptions = {
