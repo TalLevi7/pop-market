@@ -92,9 +92,13 @@ function Signup() {
             type="tel"
             value={phoneNumber}
             onChange={e => setPhoneNumber(e.target.value)}
-            pattern="^\d{9,12}$"
-            title="Please enter 9 to 12 digits only."
+            // Accepts either:
+            // • 0X‑XXXX‑XXXX / 0XX‑XXXX‑XXX (local Israeli format)
+            // • +972‑X‑XXXX‑XXXX (international format)
+            pattern="^(?:0(?:[23489]\d{7}|5\d{8}|7\d{8})|\+972(?:[23489]\d{7}|5\d{8}|7\d{8}))$"
+            title="Enter a valid Israeli phone number (e.g. 0521234567 or +972521234567)."
           />
+
           <div className="signup-help">
             Adding your phone number will display it on any market listings you post.
           </div>
