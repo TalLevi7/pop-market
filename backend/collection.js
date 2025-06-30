@@ -17,7 +17,9 @@ router.get('/', authenticate, async (req, res) => {
          p.serial_number,
          p.category,
          p.sub_category,
-         p.picture
+         p.picture,
+         p.release_year,
+         p.estimated_price
        FROM personal_collection pc
        JOIN pop_catalog p ON pc.pop_id = p.pop_id
        WHERE pc.user_id = ?`,
