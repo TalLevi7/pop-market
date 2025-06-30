@@ -36,7 +36,7 @@ const app = express();
 // updated cors to allow requests from different origins
 const allowedOrigins = [
   'https://popmarketproject.com',
-  'https://www.popmarketproject.com',
+  'https://www.popmarketproject.com'
 ];
 
 const corsOptions = {
