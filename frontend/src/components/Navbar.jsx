@@ -4,7 +4,7 @@
 import React, { useState, useContext } from 'react'; 
 import { Link, useNavigate } from 'react-router-dom'; // React Router
 import { AuthContext } from '../context/AuthContext'; // Import AuthContext
-import '../styles/Common.css'; // make sure to create this CSS file
+import '../styles/Common.css';
 
 function Navbar() {
   const { logout } = useContext(AuthContext); // Get isAuthenticated from AuthContext

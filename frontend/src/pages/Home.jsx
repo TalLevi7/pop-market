@@ -10,9 +10,9 @@ function Home() {
 
   // List your rotating‐ad image URLs here
   const ads = [
-    '/images/ad1.png',
-    '/images/ad2.png',
-    '/images/ad3.png'
+    "/images/ad1.png",
+    "/images/ad2.png",
+    "/images/ad3.png"
   ];
 
   // Fetch latest market items

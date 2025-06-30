@@ -13,7 +13,7 @@ function Catalog() {
   const [searchText, setSearchText]         = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [subCategoryFilter, setSubCategoryFilter] = useState('');
-  const [sortBy, setSortBy]                 = useState(''); // ← new sort state
+  const [sortBy, setSortBy]                 = useState('');
 
   const navigate = useNavigate();
   const token    = localStorage.getItem('token');
@@ -285,7 +285,7 @@ function Catalog() {
                 <p><strong>Release-Year:</strong> {pop.release_year}</p>
                 {/* Estimated price (from backend), safely formatted */}
                 <p>
-                  <strong>Estimated Price:</strong>{' '}
+                  <strong>Estimated Value:</strong>{' '}
                   {pop.estimated_price == null
                     ? '—'
                     : `$${parseFloat(pop.estimated_price).toFixed(2)}`}

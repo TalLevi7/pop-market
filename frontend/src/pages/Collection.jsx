@@ -12,6 +12,7 @@ export default function Collection() {
   const [search, setSearch]     = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterSub, setFilterSub]           = useState('');
+  const [sortBy, setSortBy]     = useState('');
   const API_URL = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
@@ -82,10 +83,44 @@ export default function Collection() {
     [items, filterCategory]
   );
 
+  // Apply search and filters
   const filtered = items
     .filter(i => i.pop_name.toLowerCase().includes(search.toLowerCase()))
     .filter(i => !filterCategory || i.category === filterCategory)
     .filter(i => !filterSub      || i.sub_category === filterSub);
+
+  // Sort the filtered list
+  const sortedList = useMemo(() => {
+    const arr = [...filtered];
+    if (sortBy === 'year') {
+      arr.sort((a, b) => b.release_year - a.release_year);
+    } else if (sortBy === 'alpha') {
+      arr.sort((a, b) => a.pop_name.localeCompare(b.pop_name));
+    } else if (sortBy === 'price_asc') {
+      arr.sort((a, b) => {
+        const aP = a.estimated_price != null ? parseFloat(a.estimated_price) : Infinity;
+        const bP = b.estimated_price != null ? parseFloat(b.estimated_price) : Infinity;
+        return aP - bP;
+      });
+    } else if (sortBy === 'price_desc') {
+      arr.sort((a, b) => {
+        const aP = a.estimated_price != null ? parseFloat(a.estimated_price) : -Infinity;
+        const bP = b.estimated_price != null ? parseFloat(b.estimated_price) : -Infinity;
+        return bP - aP;
+      });
+    }
+    return arr;
+  }, [filtered, sortBy]);
+
+  // Compute total estimated value of full collection
+  const totalValue = useMemo(
+    () =>
+      items.reduce(
+        (sum, i) => sum + (i.estimated_price != null ? parseFloat(i.estimated_price) : 0),
+        0
+      ),
+    [items]
+  );
 
   if (loading) return <div className="collection"><p>Loading your collection…</p></div>;
   if (error)   return <div className="collection error"><p>{error}</p></div>;
@@ -108,7 +143,13 @@ export default function Collection() {
 
   return (
     <div className="collection">
-      <h1>Your Collection</h1>
+      <div className="collection-header">
+        <h1>Your Collection</h1>
+        <p className="collection-total">
+          <strong>Total Estimated Value:</strong> $<strong>{totalValue.toFixed(2)}</strong>
+        </p>
+      </div>
+
 
       <div className="catalog-filters">
         <input
@@ -125,17 +166,37 @@ export default function Collection() {
           <option value="">All Sub-Categories</option>
           {subCategories.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
+        {/* Sort control */}
+        <div className="catalog-sort">
+          <label htmlFor="sortSelect">Sort by: </label>
+          <select
+            id="sortSelect"
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+          >
+            <option value="">None</option>
+            <option value="year">Release-Year</option>
+            <option value="alpha">A – Z</option>
+            <option value="price_asc">Price: Low → High</option>
+            <option value="price_desc">Price: High → Low</option>
+          </select>
+        </div>
       </div>
 
-      {filtered.length === 0
+      {sortedList.length === 0
         ? <p className="empty">No items match your filters.</p>
         : <div className="catalog-grid">
-            {filtered.map(item => (
+            {sortedList.map(item => (
               <div key={item.collection_id} className="pop-card">
                 <img src={item.picture} alt={item.pop_name} />
                 <h3>{item.pop_name}</h3>
                 <h4>{item.serial_number}</h4>
-                <p>{item.category} – {item.sub_category}</p>
+                <p>
+                  <strong>Estimated Value:</strong>{' '}
+                  {item.estimated_price == null
+                    ? '—'
+                    : `$${parseFloat(item.estimated_price).toFixed(2)}`}
+                </p>
                 <small>
                   Acquired: {new Date(item.acquired_date).toLocaleDateString('en-GB')}
                 </small>
