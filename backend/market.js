@@ -1,12 +1,14 @@
+// routes/market.js
+
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
+const db = require('./db');             // your MySQL connection/export
 const authenticate = require('./authenticate');
 const multer = require('multer');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 require('dotenv').config();
 
-// AWS S3 setup
+// configure AWS SDK v3 S3 client
 const s3 = new S3Client({
   region: process.env.REGION,
   credentials: {
@@ -15,13 +17,13 @@ const s3 = new S3Client({
   },
 });
 
-// Multer setup
+// use multer memory storage to get file buffer
 const upload = multer({ storage: multer.memoryStorage() });
 
 
 // ------------------------------------------------------------
 // GET /api/market
-// Return all approved & active listings
+// Return all approved & active listings, with per-seller avg_rating & review_count.
 // ------------------------------------------------------------
 router.get('/', async (req, res) => {
   try {
@@ -71,14 +73,12 @@ router.get('/', async (req, res) => {
 
 // ------------------------------------------------------------
 // GET /api/market/seller/:id/reviews
-// Return seller’s username plus all approved reviews
+// Return seller’s username plus all approved reviews for that seller
 // ------------------------------------------------------------
 router.get('/seller/:id/reviews', async (req, res) => {
   const sellerId = parseInt(req.params.id, 10);
-  if (isNaN(sellerId)) {
-    return res.status(400).json({ error: 'Invalid seller ID' });
-  }
   try {
+    // 1) fetch the reviews themselves
     const [rows] = await db.execute(`
       SELECT
         mf.feedback_id,
@@ -93,17 +93,21 @@ router.get('/seller/:id/reviews', async (req, res) => {
       ORDER BY mf.created_at DESC
     `, [sellerId]);
 
+    // 2) fetch the seller’s own username
     const [[sellerRow]] = await db.execute(
       `SELECT username FROM users WHERE user_id = ?`,
       [sellerId]
     );
     const seller_username = sellerRow?.username || 'Unknown';
 
+    // 3) compute overall average & count
+    let avg = 0;
     const count = rows.length;
-    const avg = count > 0
-      ? (rows.reduce((sum, r) => sum + r.rating, 0) / count).toFixed(1)
-      : 0;
+    if (count > 0) {
+      avg = (rows.reduce((sum, r) => sum + r.rating, 0) / count).toFixed(1);
+    }
 
+    // 4) send back everything
     res.json({
       seller_username,
       reviews:      rows,
@@ -118,38 +122,9 @@ router.get('/seller/:id/reviews', async (req, res) => {
 
 
 // ------------------------------------------------------------
-// GET /api/market/:id/reviews
-// Return all approved reviews for a listing
-// ------------------------------------------------------------
-router.get('/:id/reviews', async (req, res) => {
-  const marketId = parseInt(req.params.id, 10);
-  if (isNaN(marketId)) {
-    return res.status(400).json({ error: 'Invalid market ID' });
-  }
-  try {
-    const [rows] = await db.execute(`
-      SELECT
-        feedback_id,
-        buyer_id,
-        rating,
-        review,
-        created_at
-      FROM market_feedback
-      WHERE market_id = ?
-        AND approved = 1
-      ORDER BY created_at DESC
-    `, [marketId]);
-    res.json(rows);
-  } catch (err) {
-    console.error('Error fetching reviews:', err);
-    res.status(500).json({ error: 'Could not load reviews' });
-  }
-});
-
-
-// ------------------------------------------------------------
 // POST /api/market
-// Create a new listing
+// Create a new listing, upload image to S3, store its URL.
+// Expects multipart/form-data with up to 3 files in field "images"
 // ------------------------------------------------------------
 router.post(
   '/',
@@ -167,6 +142,7 @@ router.post(
       details
     } = req.body;
 
+    // 1) Upload up to 3 files to S3
     const urls = [null, null, null];
     try {
       for (let i = 0; i < (req.files || []).length; i++) {
@@ -186,6 +162,7 @@ router.post(
       return res.status(500).json({ error: 'Failed to upload images' });
     }
 
+    // 2) Validate inputs
     if (not_in_catalog === 'true') {
       if (!custom_pop_name?.trim()) {
         return res.status(400).json({ error: 'Missing custom_pop_name' });
@@ -202,6 +179,7 @@ router.post(
       return res.status(400).json({ error: 'Missing location' });
     }
 
+    // 3) INSERT into market with all three picture columns
     const sql = not_in_catalog === 'true'
       ? `INSERT INTO market
           (pop_id, seller_id, price, location, market_picture, market_picture2, market_picture3, details, status, approved, custom_pop_name, custom_serial_number)
@@ -247,125 +225,163 @@ router.post(
 
 
 // ------------------------------------------------------------
+// GET /api/market/:id/reviews
+// Return all approved reviews for a single listing
+// ------------------------------------------------------------
+router.get('/:id/reviews', async (req, res) => {
+  const marketId = parseInt(req.params.id, 10);
+  try {
+    const [rows] = await db.execute(`
+      SELECT
+        feedback_id,
+        buyer_id,
+        rating,
+        review,
+        created_at
+      FROM market_feedback
+      WHERE market_id = ?
+        AND approved = 1
+      ORDER BY created_at DESC
+    `, [marketId]);
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching reviews:', err);
+    res.status(500).json({ error: 'Could not load reviews' });
+  }
+});
+
+
+// ------------------------------------------------------------
 // POST /api/market/:id/feedback
 // Submit a new feedback (pending approval)
 // ------------------------------------------------------------
-router.post('/:id/feedback', authenticate, async (req, res) => {
-  const buyerId  = req.user.id;
-  const marketId = parseInt(req.params.id, 10);
-  if (isNaN(marketId)) {
-    return res.status(400).json({ error: 'Invalid market ID' });
-  }
+router.post(
+  '/:id/feedback',
+  authenticate,
+  async (req, res) => {
+    const buyerId  = req.user.id;
+    const marketId = parseInt(req.params.id, 10);
+    const { rating, review } = req.body;
 
-  const { rating, review } = req.body;
-  if (!rating || rating < 1 || rating > 5) {
-    return res.status(400).json({ error: 'Invalid rating' });
-  }
-
-  try {
-    const [exists] = await db.execute(
-      `SELECT 1 FROM market_feedback WHERE market_id = ? AND buyer_id = ?`,
-      [marketId, buyerId]
-    );
-    if (exists.length) {
-      return res.status(400).json({ error: 'You already reviewed this listing' });
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'Invalid rating' });
     }
 
-    const [mkt] = await db.execute(
-      `SELECT seller_id FROM market WHERE market_id = ?`,
-      [marketId]
-    );
-    if (!mkt.length) {
-      return res.status(404).json({ error: 'Listing not found' });
-    }
-    const sellerId = mkt[0].seller_id;
+    try {
+      // prevent duplicate per listing
+      const [exists] = await db.execute(
+        `SELECT 1 FROM market_feedback WHERE market_id = ? AND buyer_id = ?`,
+        [marketId, buyerId]
+      );
+      if (exists.length) {
+        return res.status(400).json({ error: 'You already reviewed this listing' });
+      }
 
-    await db.execute(
-      `INSERT INTO market_feedback
-         (market_id, buyer_id, seller_id, rating, review)
-       VALUES (?, ?, ?, ?, ?)`,
-      [marketId, buyerId, sellerId, rating, review || null]
-    );
-    res.status(201).json({ success: true });
-  } catch (err) {
-    console.error('Error creating feedback:', err);
-    res.status(500).json({ error: 'Could not submit feedback' });
+      // find seller_id
+      const [mkt] = await db.execute(
+        `SELECT seller_id FROM market WHERE market_id = ?`,
+        [marketId]
+      );
+      if (!mkt.length) {
+        return res.status(404).json({ error: 'Listing not found' });
+      }
+      const sellerId = mkt[0].seller_id;
+
+      // insert feedback
+      await db.execute(
+        `INSERT INTO market_feedback
+           (market_id, buyer_id, seller_id, rating, review)
+         VALUES (?, ?, ?, ?, ?)`,
+        [marketId, buyerId, sellerId, rating, review || null]
+      );
+      res.status(201).json({ success: true });
+    } catch (err) {
+      console.error('Error creating feedback:', err);
+      res.status(500).json({ error: 'Could not submit feedback' });
+    }
   }
-});
+);
 
 
 // ------------------------------------------------------------
 // GET /api/market/my
 // Return all active listings for the authenticated user
 // ------------------------------------------------------------
-router.get('/my', authenticate, async (req, res) => {
-  const userId = req.user.id;
-  try {
-    const [rows] = await db.execute(`
-      SELECT
-        m.market_id,
-        COALESCE(p.pop_name, m.custom_pop_name)           AS pop_name,
-        COALESCE(p.serial_number, m.custom_serial_number) AS serial_number,
-        m.price,
-        m.location,
-        m.market_picture,
-        m.market_picture2,
-        m.market_picture3,
-        m.details,
-        m.date_uploaded,
-        m.status
-      FROM market m
-      LEFT JOIN pop_catalog p ON m.pop_id = p.pop_id
-      WHERE m.seller_id = ?
-        AND m.status = 'active'
-      ORDER BY m.date_uploaded DESC
-    `, [userId]);
-    res.json(rows);
-  } catch (err) {
-    console.error('Error fetching user listings:', err);
-    res.status(500).json({ error: 'Could not load your listings' });
+router.get(
+  '/my',
+  authenticate,
+  async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const [rows] = await db.execute(`
+        SELECT
+          m.market_id,
+          COALESCE(p.pop_name, m.custom_pop_name)    AS pop_name,
+          COALESCE(p.serial_number, m.custom_serial_number) AS serial_number,
+          m.price,
+          m.location,
+          m.market_picture,
+          m.market_picture2,
+          m.market_picture3,
+          m.details,
+          m.date_uploaded,
+          m.status
+        FROM market m
+        LEFT JOIN pop_catalog p ON m.pop_id = p.pop_id
+        WHERE m.seller_id = ?
+          AND m.status = 'active'
+        ORDER BY m.date_uploaded DESC
+      `, [userId]);
+      res.json(rows);
+    } catch (err) {
+      console.error('Error fetching user listings:', err);
+      res.status(500).json({ error: 'Could not load your listings' });
+    }
   }
-});
+);
 
 
 // ------------------------------------------------------------
 // PATCH /api/market/:id
 // Update a listing’s status (e.g. mark as sold/removed)
 // ------------------------------------------------------------
-router.patch('/:id', authenticate, async (req, res) => {
-  const userId   = req.user.id;
-  const marketId = parseInt(req.params.id, 10);
-  const { status } = req.body;
+router.patch(
+  '/:id',
+  authenticate,
+  async (req, res) => {
+    const userId = req.user.id;
+    const marketId = parseInt(req.params.id, 10);
+    const { status } = req.body;
 
-  if (isNaN(marketId)) {
-    return res.status(400).json({ error: 'Invalid market ID' });
-  }
-
-  if (!['active','sold','removed','archived'].includes(status)) {
-    return res.status(400).json({ error: 'Invalid status' });
-  }
-
-  try {
-    const [existing] = await db.execute(
-      `SELECT seller_id FROM market WHERE market_id = ?`,
-      [marketId]
-    );
-    if (!existing.length) {
-      return res.status(404).json({ error: 'Listing not found' });
-    }
-    if (existing[0].seller_id !== userId) {
-      return res.status(403).json({ error: 'Not your listing' });
+    // allow 'active','sold','removed','archived'
+    if (!['active','sold','removed','archived'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
     }
 
-    await db.execute(
-      `UPDATE market SET status = ? WHERE market_id = ?`,
-      [status, marketId]
-    );
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Error updating listing status:', err);
-    res.status(500).json({ error: 'Could not update listing' });
+    try {
+      // verify ownership
+      const [existing] = await db.execute(
+        `SELECT seller_id FROM market WHERE market_id = ?`,
+        [marketId]
+      );
+      if (!existing.length) {
+        return res.status(404).json({ error: 'Listing not found' });
+      }
+      if (existing[0].seller_id !== userId) {
+        return res.status(403).json({ error: 'Not your listing' });
+      }
+
+      // update
+      await db.execute(
+        `UPDATE market SET status = ? WHERE market_id = ?`,
+        [status, marketId]
+      );
+      res.json({ success: true });
+    } catch (err) {
+      console.error('Error updating listing status:', err);
+      res.status(500).json({ error: 'Could not update listing' });
+    }
   }
-});
+);
 
 module.exports = router;
