@@ -132,7 +132,7 @@ h1 {
   color: #e74c3c;
 }
 
-/* Styled Add to Collection button */
+/* Add to Collection button */
 .card-actions .addtocollection-button {
   background-color: #00aeff;
   color: white;
@@ -143,6 +143,7 @@ h1 {
   cursor: pointer;
   max-width: 100px;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  font-weight: bold;
 }
 
 .card-actions .addtocollection-button:hover {
@@ -151,7 +152,7 @@ h1 {
   color: white;
 }
 
-/* Styled Sell on Market button */
+/* Sell on Market button */
 .card-actions .sellonmarket-button {
   background-color: #ffcc00;
   color: white;
@@ -162,6 +163,7 @@ h1 {
   cursor: pointer;
   max-width: 100px;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  font-weight: bold;
 }
 
 .card-actions .sellonmarket-button:hover {

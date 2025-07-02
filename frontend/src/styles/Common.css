@@ -1,24 +1,27 @@
 /* Layout css */
 .layout-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  
-  .layout-content {
-    flex: 1;
-  }
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout-content {
+  flex: 1;
+}
 
 
-  /* Navbar css*/
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2px 5px;
-    background: #DBEDFC;
-    border-bottom: 3px solid #A9A9A9;
-    height: 80px;
+/* Navbar css */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 5px;
+  background: #DBEDFC;
+  border-bottom: 3px solid #A9A9A9;
+  height: 80px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden; /* Prevent any overflow */
 }
 
 .navbar-greeting {
@@ -26,42 +29,53 @@
   font-size: large;
   font-weight: bold;
   color: #3700ff;
+  white-space: nowrap; /* Prevent text wrapping */
+  flex-shrink: 1; /* Allow greeting to shrink */
 }
 
 .logo {
-    height: 100%;
-    width: auto;
-    object-fit: contain;
-    margin: 0;
-    padding: 0;
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0; /* Logo shouldn't shrink */
+  max-width: 25%; /* Limit logo width on small screens */
 }
 
 .navbar ul {
   list-style: none;
   display: flex;
-  align-items: center; 
+  align-items: center;
   gap: 70px;
   margin: 20px;
   padding: 0;
-  height: 100%;         
+  height: 100%;
+  flex: 1; /* Take available space */
+  justify-content: center; /* Center the nav items */
+  min-width: 0; /* Allow shrinking */
+  overflow: hidden; /* Prevent overflow */
 }
 
 .navbar ul li {
   display: flex;
-  align-items: center;  
+  align-items: center;
   height: 100%;
+  flex-shrink: 1; /* Allow nav items to shrink */
+  min-width: 0; /* Allow shrinking below content size */
 }
 
 .navbar ul li a {
-    text-decoration: none;
-    color: #333;
-    font-size: x-large;
-    font-weight: bold;
-    transition: color 0.3s ease;
+  text-decoration: none;
+  color: #333;
+  font-size: x-large;
+  font-weight: bold;
+  transition: color 0.3s ease;
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .navbar ul li a:hover {
-    color: #EFA300;
+  color: #EFA300;
 }
 
 .auth-buttons {
@@ -69,93 +83,266 @@
   align-items: center;
   gap: 15px;
   height: 100%;
+  flex-shrink: 1; /* Allow auth buttons to shrink when needed */
+  min-width: 0; /* Allow shrinking */
+  overflow: hidden; /* Prevent overflow */
 }
 
-
-button {
-    padding: 12px 24px;
-    border: none;
-    cursor: pointer;
-    font-size: larger;
-    font-weight: bold;
-    border-radius: 5px;
-    transition: background 0.3s ease;
+/* Scoped navbar buttons */
+.navbar button {
+  padding: 12px 24px;
+  border: none;
+  cursor: pointer;
+  font-size: larger;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+  white-space: nowrap; /* Prevent button text wrapping */
 }
 
-.login {
-    background: #90EE90;
+.navbar .login {
+  background: #90EE90;
+}
+.navbar .login:hover {
+  background: #7ACC7A;
 }
 
-.login:hover {
-    background: #7ACC7A;
+.navbar .logout {
+  background: #FF5733;
+  color: white;
+}
+.navbar .logout:hover {
+  background: #E64520;
 }
 
-.logout {
-    background: #FF5733;
-    color: white;
+.navbar .admin-button {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  background: #f0ad4e;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.navbar .admin-button:hover {
+  background: #ec971f;
 }
 
-.logout:hover {
-    background: #E64520;
+/* Footer css */
+.footer {
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  position: relative;
+  width: 100%;
+  bottom: 0;
 }
 
+.footer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
 
-  /* Footer css */
-  .footer {
-    background-color: #222;
-    color: white;
-    text-align: center;
-    padding: 20px 0;
-    position: relative;
-    width: 100%;
-    bottom: 0;
+.footer-nav {
+  display: flex;
+  gap: 10px;
+}
+
+.footer-nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+  transition: color 0.3s ease-in-out;
+}
+
+.footer-nav a:hover {
+  color: #ffcc00;
+}
+
+.divider {
+  color: white;
+  font-size: 18px;
+}
+
+/* Responsive Design - Smoother scaling with more breakpoints */
+@media (max-width: 1200px) {
+  .navbar ul {
+    gap: 50px;
   }
-  
-  .footer-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+  .navbar ul li a {
+    font-size: large;
   }
-  
+}
+
+@media (max-width: 1024px) {
+  .navbar ul {
+    gap: 35px;
+  }
+  .navbar ul li a {
+    font-size: medium;
+  }
+}
+
+@media (max-width: 900px) {
+  .navbar ul {
+    gap: 25px;
+  }
+  .navbar ul li a {
+    font-size: medium;
+  }
+  .navbar button {
+    font-size: medium;
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 2px 3px;
+    height: 70px;
+  }
+
+  .logo {
+    max-width: 20%;
+  }
+
+  .navbar ul {
+    gap: 15px;
+    margin: 5px;
+  }
+
+  .navbar ul li a {
+    font-size: small;
+  }
+
+  .navbar button {
+    font-size: small;
+    padding: 8px 12px;
+  }
+
+  .navbar-greeting {
+    font-size: small;
+    margin-right: 0.3rem;
+  }
+
+  .auth-buttons {
+    gap: 8px;
+  }
+
   .footer-nav {
-    display: flex;
+    flex-direction: column;
     gap: 10px;
   }
-  
-  .footer-nav a {
-    color: white;
-    text-decoration: none;
-    font-size: 20px;
-    transition: color 0.3s ease-in-out;
-  }
-  
-  .footer-nav a:hover {
-    color: #ffcc00;
-  }
-  
-  .divider {
-    color: white;
-    font-size: 18px;
-  }
-  
-
-  @media (max-width: 768px) {
-    .navbar ul {
-        gap: 30px;
-        font-size: medium;
-    }
-
-    .footer-nav {
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    button {
-        font-size: medium;
-        padding: 10px 20px;
-    }
 }
+
+@media (max-width: 640px) {
+  .navbar ul {
+    gap: 10px;
+  }
+  .navbar ul li a {
+    font-size: small;
+  }
+  .navbar button {
+    font-size: x-small;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 1px 2px;
+    height: 60px;
+  }
+
+  .logo {
+    max-width: 18%;
+  }
+
+  .navbar ul {
+    gap: 8px;
+    margin: 2px;
+  }
+
+  .navbar ul li a {
+    font-size: x-small;
+  }
+
+  .navbar button {
+    font-size: x-small;
+    padding: 5px 8px;
+  }
+
+  .navbar-greeting {
+    font-size: x-small;
+    margin-right: 0.2rem;
+  }
+
+  .auth-buttons {
+    gap: 5px;
+  }
+
+  .navbar .admin-button {
+    font-size: x-small;
+    padding: 4px 6px;
+  }
+}
+
+@media (max-width: 400px) {
+  .navbar ul {
+    gap: 6px;
+  }
+  .navbar ul li a {
+    font-size: x-small;
+  }
+  .navbar button {
+    font-size: xx-small;
+    padding: 4px 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .navbar {
+    height: 55px;
+    padding: 1px;
+  }
+
+  .logo {
+    max-width: 15%;
+  }
+
+  .navbar ul {
+    gap: 4px;
+    margin: 1px;
+  }
+
+  .navbar ul li a {
+    font-size: xx-small;
+  }
+
+  .navbar button {
+    font-size: xx-small;
+    padding: 3px 5px;
+  }
+
+  .navbar-greeting {
+    font-size: xx-small;
+    margin-right: 0.1rem;
+  }
+
+  .auth-buttons {
+    gap: 3px;
+  }
+
+  .navbar .admin-button {
+    font-size: xx-small;
+    padding: 2px 4px;
+  }
+}
+
 .user-panel-icon {
   display: flex;
   align-items: center;
@@ -175,22 +362,29 @@ button {
   transform: scale(1.1);
 }
 
-.admin-button {
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  background: #f0ad4e;       
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.admin-button:hover {
-  background: #ec971f;
-}
-
-
+/* leave .auth-buttons .admin-panel-icon as-is */
 .auth-buttons .admin-panel-icon {
   margin-right: 8px;
+}
+
+/* Additional responsive adjustments for user icon */
+@media (max-width: 768px) {
+  .user-icon {
+    height: 16px;
+    width: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-icon {
+    height: 12px;
+    width: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .user-icon {
+    height: 10px;
+    width: 10px;
+  }
 }
