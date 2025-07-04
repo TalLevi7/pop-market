@@ -30,3 +30,5 @@ echo "BUCKET_NAME=$BUCKET_NAME" >> ./.amplify-hosting/compute/default/.env
 echo "BUCKET_REGION=$BUCKET_REGION" >> ./.amplify-hosting/compute/default/.env
 echo "PRICECHARTING_TOKEN=$PRICECHARTING_TOKEN" >> ./.amplify-hosting/compute/default/.env
 echo "VITE_API_URL=$VITE_API_URL" >> ./.amplify-hosting/compute/default/.env
+echo "SES_FROM_EMAIL=$SES_FROM_EMAIL" >> ./.amplify-hosting/compute/default/.env
+echo "FRONTEND_URL=$FRONTEND_URL" >> ./.amplify-hosting/compute/default/.env
