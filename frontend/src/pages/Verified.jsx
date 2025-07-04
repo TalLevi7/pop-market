@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import '../styles/UserVerification.css'; 
 
 function Verified() {
   return (
-    <div className="verified-page">
+    <div className="verification-success">
       <h2>🎉 Email Confirmed!</h2>
       <p>Your email address has been verified successfully.</p>
       <Link to="/login">

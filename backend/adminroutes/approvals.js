@@ -1,7 +1,9 @@
 // backend/adminroutes/approvals.js
+
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const { sendEmail } = require('../emailService');
 
 // GET /api/admin/approvals
 // List all listings awaiting approval, including any custom-pop fields
@@ -45,18 +47,21 @@ router.patch('/:id', async (req, res) => {
   }
 
   try {
+    console.log(`🔔 Approval requested: marketId=${marketId}, action=${action}, pop_id=${pop_id}`);
+
+    let finalPopId = pop_id || null;
+
     if (action === 'approve') {
-      if (pop_id) {
-        // Link the custom listing to an existing catalog pop, then approve
+      // If custom and pop_id given, link it
+      if (finalPopId) {
         await db.execute(
           `UPDATE market
              SET pop_id   = ?,
                  approved = TRUE
            WHERE market_id = ?`,
-          [parseInt(pop_id, 10), marketId]
+          [parseInt(finalPopId, 10), marketId]
         );
       } else {
-        // Just approve
         await db.execute(
           `UPDATE market
              SET approved = TRUE
@@ -64,6 +69,54 @@ router.patch('/:id', async (req, res) => {
           [marketId]
         );
       }
+      console.log(`✅ market ${marketId} marked approved (linked pop_id=${finalPopId})`);
+
+      // ─── Send wishlist notifications ─────────────────────────────
+      const [[popRow]] = await db.execute(
+        `SELECT COALESCE(p.pop_name, m.custom_pop_name) AS pop_name
+           FROM market m
+           LEFT JOIN pop_catalog p ON m.pop_id = p.pop_id
+          WHERE m.market_id = ?`,
+        [marketId]
+      );
+      const popName = popRow.pop_name;
+      console.log(`▶️ popName for market ${marketId}:`, popName);
+
+      const [wishRows] = await db.execute(
+        `SELECT u.user_id, u.email
+           FROM wishlist w
+           JOIN users u ON w.user_id = u.user_id
+          WHERE w.pop_id = ?
+            AND u.is_verified = 1`,
+        [finalPopId]
+      );
+      console.log(`ℹ️ Found ${wishRows.length} users to notify:`, wishRows.map(w => w.email));
+
+      for (const { email } of wishRows) {
+        console.log(`✉️  Sending notification to`, email);
+        const subject = `Your wish-listed Funko Pop is now on the market!`;
+        const marketLink = `${process.env.FRONTEND_URL}/market`;
+        const html = `
+          <p>Good news!</p>
+          <p>The Funko POP <strong>${popName}</strong> from your wish list
+          has just been posted for sale on <a href="${marketLink}">the market</a>.</p>
+          <p>Click <a href="${marketLink}">here</a> to view all listings.</p>
+        `;
+        const text = `
+Good news!
+The Funko POP "${popName}" from your wish list
+has just been posted for sale on the market.
+Visit: ${marketLink}
+        `;
+        try {
+          await sendEmail({ to: email, subject, html, text });
+          console.log(`   ✔️  Sent to ${email}`);
+        } catch (mailErr) {
+          console.error(`   ❌  Failed to send to ${email}:`, mailErr);
+        }
+      }
+      // ─────────────────────────────────────────────────────────────
+
     } else {
       // Reject - mark as removed
       await db.execute(
@@ -72,6 +125,7 @@ router.patch('/:id', async (req, res) => {
          WHERE market_id = ?`,
         [marketId]
       );
+      console.log(`❌ market ${marketId} marked rejected`);
     }
 
     res.json({ success: true });
