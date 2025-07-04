@@ -14,6 +14,8 @@ router.get('/', async (req, res) => {
     return res.status(400).send('Verification token missing.');
   }
 
+  console.log('⚙️  userVerification called with token:', token);
+
   try {
     // Find user by token and check expiry
     const [rows] = await db.query(
@@ -36,8 +38,9 @@ router.get('/', async (req, res) => {
              verification_token = NULL,
              verification_expires = NULL
        WHERE user_id = ?`,
-      [user.id]
+      [user.user_id]
     );
+    console.log('✅  Updated is_verified for user_id:', user.user_id);
 
     // Redirect to frontend “verified” page
     return res.redirect(`${process.env.FRONTEND_URL}/verified`);

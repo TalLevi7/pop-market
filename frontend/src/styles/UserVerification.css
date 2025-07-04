@@ -1,0 +1,50 @@
+/* src/styles/UserVerification.css */
+
+.verification-loading {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  color: #333;
+}
+
+.verification-error,
+.verification-success {
+  max-width: 400px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.verification-error h1,
+.verification-success h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+.verification-error p,
+.verification-success p {
+  margin: 1rem 0 2rem;
+  font-size: 1rem;
+  color: #555;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
