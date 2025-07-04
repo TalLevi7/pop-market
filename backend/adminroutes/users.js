@@ -15,6 +15,7 @@ router.get('/', async (req, res) => {
         phone_number,
         DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at,
         is_admin,
+        is_verified,             
         is_banned
       FROM users
       ORDER BY created_at DESC
@@ -27,10 +28,10 @@ router.get('/', async (req, res) => {
 });
 
 // PUT /api/admin/users/:id
-// Edit user details (username, email, phone, is_admin)
+// Edit user details (username, email, phone, is_admin, is_verified)
 router.put('/:id', async (req, res) => {
   const userId = parseInt(req.params.id, 10);
-  const { username, email, phone_number, is_admin } = req.body;
+  const { username, email, phone_number, is_admin, is_verified } = req.body; 
 
   if (!username?.trim() || !email?.trim()) {
     return res.status(400).json({ error: 'Username and email are required' });
@@ -42,13 +43,15 @@ router.put('/:id', async (req, res) => {
          SET username     = ?,
              email        = ?,
              phone_number = ?,
-             is_admin     = ?
+             is_admin     = ?,
+             is_verified  = ?
        WHERE user_id = ?`,
       [
         username.trim(),
         email.trim(),
         phone_number?.trim() || null,
-        is_admin ? 1 : 0,
+        is_admin    ? 1 : 0,
+        is_verified ? 1 : 0,       
         userId
       ]
     );

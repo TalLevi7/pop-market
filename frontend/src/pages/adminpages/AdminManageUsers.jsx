@@ -13,10 +13,11 @@ export default function AdminManageUsers() {
   const [error, setError]     = useState(null);
   const [editId, setEditId]   = useState(null);
   const [form, setForm]       = useState({
-    username:     '',
-    email:        '',
-    phone_number: '',
-    is_admin:     false
+    username:      '',
+    email:         '',
+    phone_number:  '',
+    is_admin:      false,
+    is_verified:   false      
   });
   const [search, setSearch]   = useState('');
 
@@ -45,7 +46,8 @@ export default function AdminManageUsers() {
       username:     user.username,
       email:        user.email,
       phone_number: user.phone_number || '',
-      is_admin:     user.is_admin === 1
+      is_admin:     user.is_admin === 1,
+      is_verified:  user.is_verified === 1   
     });
   };
 
@@ -64,7 +66,12 @@ export default function AdminManageUsers() {
       setUsers(list =>
         list.map(u =>
           u.user_id === id
-            ? { ...u, ...form, is_admin: form.is_admin ? 1 : 0 }
+            ? {
+                ...u,
+                ...form,
+                is_admin:    form.is_admin ? 1 : 0,
+                is_verified: form.is_verified ? 1 : 0   
+              }
             : u
         )
       );
@@ -142,6 +149,7 @@ export default function AdminManageUsers() {
             <th>Phone</th>
             <th>Joined</th>
             <th>Admin?</th>
+            <th>Verified?</th>            
             <th>Banned?</th>
             <th>Actions</th>
           </tr>
@@ -180,6 +188,13 @@ export default function AdminManageUsers() {
                       onChange={e => setForm(f => ({ ...f, is_admin: e.target.checked }))}
                     />
                   </td>
+                  <td>                
+                    <input
+                      type="checkbox"
+                      checked={form.is_verified}
+                      onChange={e => setForm(f => ({ ...f, is_verified: e.target.checked }))}
+                    />
+                  </td>
                   <td>{user.is_banned ? 'Yes' : 'No'}</td>
                 </>
               ) : (
@@ -189,6 +204,7 @@ export default function AdminManageUsers() {
                   <td>{user.phone_number || '—'}</td>
                   <td>{new Date(user.created_at).toLocaleDateString('en-GB')}</td>
                   <td>{user.is_admin ? 'Yes' : 'No'}</td>
+                  <td>{user.is_verified ? 'Yes' : 'No'}</td> 
                   <td>{user.is_banned ? 'Yes' : 'No'}</td>
                 </>
               )}
