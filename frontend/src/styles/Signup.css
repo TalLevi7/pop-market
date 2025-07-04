@@ -5,8 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background: #f7f9fc;
+  min-height: 80vh;
 }
 
 /* Side images: fixed-ish width, maintain aspect ratio */

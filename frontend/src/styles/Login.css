@@ -1,23 +1,24 @@
-/* Outer wrapper: row layout with centered items */
+
 .login-page {
   display: flex;
   align-items: center;      /* vertical centering */
   justify-content: center;  /* horizontal centering */
-  /* min-height: 50vh;        full viewport height */
+  min-height: 75vh;        
   padding: 10px;
   box-sizing: border-box;
 }
 
+
 /* Side images: fixed width, maintain aspect ratio */
 .login-side-image {
   flex-shrink: 0;
-  width: 320px;     /* adjust up/down to taste */
+  width: 320px;     
   max-width: 30%;
   height: auto;
   margin: 0 20px;
 }
 
-/* Main container (your existing styles) */
+/* Main container */
 .login-container {
   max-width: 400px;
   padding: 20px;

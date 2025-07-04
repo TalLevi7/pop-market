@@ -28,6 +28,13 @@ const login = async (req, res) => {
         .json({ error: 'Your account has been banned. Please contact support.' });
     }
 
+    // Prevent unverified users from logging in
+    if (user[0].is_verified !== 1) {
+      return res
+        .status(403)
+        .json({ error: 'Please verify your email before logging in.' });
+    }
+
     // Check if password_hash field is available
     if (!user[0].password_hash) {
       return res.status(500).json({ error: 'Password hash not found in database' });

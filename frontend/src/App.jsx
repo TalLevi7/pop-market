@@ -10,7 +10,7 @@ import About from "./pages/About";
 import Catalog from "./pages/Catalog";
 import Collection from "./pages/Collection";
 import ContactUs from "./pages/ContactUs";
-import Home from "./pages/Home"; // formerly index.html
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Market from "./pages/Market";
 import Signup from "./pages/Signup";
@@ -22,6 +22,10 @@ import PopSuggestions from './pages/PopSuggestions';
 import NewFeedback from './pages/NewFeedback';
 import SellerReviews from './pages/SellerReviews';
 import AiSuggestions  from './pages/AiSuggestions';
+
+// Email Verification pages
+import UserVerification from './pages/UserVerification';
+import Verified from './pages/Verified';
 
 // Admin routes
 import AdminPanel from './pages/adminpages/AdminPanel';    
@@ -99,7 +103,7 @@ function App() {
         />
          <Route
           path="admin/users"
-          element={<PrivateRoute element={<AdminManageUsers />} />}
+          element={<PrivateRoute element={<AdminManageUsers />} />} 
         />       
         <Route 
           path="admin/contact-messages" 
@@ -115,6 +119,11 @@ function App() {
         />
 
         <Route path="contactus" element={<ContactUs />} />
+
+        {/* Email verification flows */}
+        <Route path="userVerification" element={<UserVerification />} />
+        <Route path="verified" element={<Verified />} />
+
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
       </Route>
