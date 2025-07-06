@@ -251,7 +251,7 @@ function Catalog() {
 
         <div className="catalog-buttons">
           <button className="ai-suggest-button" onClick={goAi}>
-            AI Based Suggestions ✨
+            Get POP Recommendations ✨
           </button>
           {/* ─── Suggest New Pop Button ───────────────────────────────────────── */}
           <button
