@@ -1,0 +1,24 @@
+! remember to manually transfer .env file to backend folder
+
+start server:
+cd backend
+npm run dev
+
+start react app:
+cd frontend
+npm run dev
+
+start python micro-service:
+python app.py
+
+
+Installed dependencies:
+npm install bcrypt
+npm install -g nodemon
+npm install bcryptjs mysql2 dotenv
+npm install jsonwebtoken
+npm install multer @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
+npm install aws-sdk
+npm install @aws-sdk/client-s3
+npm install node-cron
+npm install @aws-sdk/client-ses
