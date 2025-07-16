@@ -13,6 +13,8 @@ export default function UserPanel() {
     phone:    '',
     notify:   false
   });
+  const [newPassword, setNewPassword]             = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
   const [success, setSuccess] = useState('');
@@ -50,24 +52,39 @@ export default function UserPanel() {
       return;
     }
 
+    // If user entered a new password, verify match
+    if ((newPassword || confirmNewPassword) && newPassword !== confirmNewPassword) {
+      setError('New passwords do not match');
+      return;
+    }
+
     try {
+      const payload = {
+        username:        form.username,
+        phone_number:    form.phone,
+        notify_wishlist: form.notify
+      };
+      if (newPassword) {
+        payload.new_password = newPassword;
+      }
+
       const res = await fetch(`${API_URL}/api/user`, {
         method: 'PUT',
         headers: {
           'Content-Type':  'application/json',
           Authorization:   `Bearer ${token}`
         },
-        body: JSON.stringify({
-          username:        form.username,
-          phone_number:    form.phone,
-          notify_wishlist: form.notify
-        })
+        body: JSON.stringify(payload)
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || 'Update failed');
       }
+
       setSuccess('Profile updated');
+      // clear password fields on success
+      setNewPassword('');
+      setConfirmNewPassword('');
     } catch (e) {
       setError(e.message);
     }
@@ -103,7 +120,6 @@ export default function UserPanel() {
           required
         />
 
-
         <label htmlFor="up-phone">Phone Number</label>
         <input
           id="up-phone"
@@ -114,6 +130,26 @@ export default function UserPanel() {
         <div className="up-help">
           Adding your phone will display it on any listings you post.
         </div>
+
+        {/* ─── Password change fields ─────────────────────────────────────────── */}
+        <label htmlFor="up-new-password">New Password</label>
+        <input
+          id="up-new-password"
+          type="password"
+          value={newPassword}
+          onChange={e => setNewPassword(e.target.value)}
+          pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+          title="At least 8 characters, with at least one letter and one number."
+        />
+
+        <label htmlFor="up-confirm-password">Confirm New Password</label>
+        <input
+          id="up-confirm-password"
+          type="password"
+          value={confirmNewPassword}
+          onChange={e => setConfirmNewPassword(e.target.value)}
+        />
+        {/* ──────────────────────────────────────────────────────────────────── */}
 
         <div className="up-checkbox">
           <input

@@ -3,6 +3,7 @@ const express      = require('express');
 const router       = express.Router();
 const db           = require('./db');
 const authenticate = require('./authenticate');
+const bcrypt       = require('bcryptjs'); 
 
 // GET /api/user
 // Return the current user’s profile
@@ -30,29 +31,56 @@ router.get('/', authenticate, async (req, res) => {
 });
 
 // PUT /api/user
-// Update the current user’s profile
+// Update the current user’s profile (and optionally password)
 router.put('/', authenticate, async (req, res) => {
   const userId = req.user.id;
-  const { username, phone_number, notify_wishlist } = req.body;
+  const {
+    username,
+    phone_number,
+    notify_wishlist,
+    new_password   
+  } = req.body;
 
   if (!username?.trim()) {
     return res.status(400).json({ error: 'Username is required' });
   }
 
   try {
-    await db.execute(
-      `UPDATE users
-         SET username        = ?, 
-             phone_number    = ?, 
-             notify_wishlist = ?
-       WHERE user_id = ?`,
-      [
-        username.trim(),
-        phone_number?.trim() || null,
-        notify_wishlist ? 1 : 0,
-        userId
-      ]
-    );
+    // If there's a new password, hash and include in update
+    if (new_password) {
+      const hashed = await bcrypt.hash(new_password, 10);
+      await db.execute(
+        `UPDATE users
+           SET username        = ?, 
+               phone_number    = ?, 
+               notify_wishlist = ?, 
+               password_hash   = ?
+         WHERE user_id = ?`,
+        [
+          username.trim(),
+          phone_number?.trim() || null,
+          notify_wishlist ? 1 : 0,
+          hashed,
+          userId
+        ]
+      );
+    } else {
+      // No password change
+      await db.execute(
+        `UPDATE users
+           SET username        = ?, 
+               phone_number    = ?, 
+               notify_wishlist = ?
+         WHERE user_id = ?`,
+        [
+          username.trim(),
+          phone_number?.trim() || null,
+          notify_wishlist ? 1 : 0,
+          userId
+        ]
+      );
+    }
+
     res.json({ success: true });
   } catch (err) {
     console.error('PUT /api/user error:', err);

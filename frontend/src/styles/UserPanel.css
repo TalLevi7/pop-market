@@ -52,8 +52,10 @@
   margin-left: 0.5rem;
 }
 
+/* Phone, username, password fields all share these styles */
 .up-form input[type="text"],
-.up-form input[type="email"] {
+.up-form input[type="email"],
+.up-form input[type="password"] {
   padding: 0.5rem;
   font-size: 1rem;
   border: 1px solid #ccc;
