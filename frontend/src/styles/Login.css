@@ -86,6 +86,19 @@
   text-decoration: underline;
 }
 
+.forgot-text {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+.forgot-text a {
+  color: #007bff;
+}
+.forgot-text a:hover {
+  text-decoration: underline;
+}
+
+
 /* Responsive fallback: stack vertically on narrow screens */
 @media (max-width: 600px) {
   .login-page {

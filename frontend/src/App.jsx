@@ -27,6 +27,10 @@ import AiSuggestions  from './pages/AiSuggestions';
 import UserVerification from './pages/UserVerification';
 import Verified from './pages/Verified';
 
+// Forgot / Reset password pages
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+
 // Admin routes
 import AdminPanel from './pages/adminpages/AdminPanel';    
 import AdminMarket  from './pages/adminpages/AdminMarket';
@@ -54,6 +58,10 @@ function App() {
         <Route path="about" element={<About />} />
         <Route path="suggest" element={<PopSuggestions />} />
         <Route path="seller/:sellerId/reviews" element={<SellerReviews />} />
+
+        {/* Forgot/Reset-password */}
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
 
         {/* Signed in users only - Protect routes with PrivateRoute */}
         <Route 
@@ -84,6 +92,7 @@ function App() {
            path="catalog/ai-suggestions" 
            element={<PrivateRoute element={<AiSuggestions />} />} 
         />
+
         {/* Admin panel (protected by PrivateRoute + in-component admin check) */}
         <Route 
           path="admin" 

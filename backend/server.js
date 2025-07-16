@@ -6,10 +6,7 @@ const db = require('./db');               // your MySQL connection
 const jwt = require('jsonwebtoken');      // for JWT verification
 const authenticate = require('./authenticate'); // your auth middleware
 
-
-
 const app = express();
-
 
 // For debugging DB connection on production
 // app.get('/api/ping', async (req, res) => {
@@ -32,7 +29,6 @@ const app = express();
 //   }
 // });
 
-
 // updated cors to allow requests from different origins
 const allowedOrigins = [
   'https://popmarketproject.com',
@@ -48,13 +44,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // for local running use:
-// app.use(cors())
+// app.use(cors());
 
 app.use(express.json());
-
-
-
-
 
 // updates catalog prices every 24 hours
 require('./api/updateApiPrices');
@@ -62,14 +54,15 @@ require('./api/updateApiPrices');
 // ---------------------
 // Routes
 // ---------------------
-const catalogRoutes = require('./catalog');
-const collectionRoutes = require('./collection');
-const wishlistRoutes   = require('./wishlist');
-const marketRoutes   = require('./market');
-const contactRouter = require('./contact');
-const userRouter = require('./user');
-const suggestionsRouter = require('./suggestions');
+const catalogRoutes       = require('./catalog');
+const collectionRoutes    = require('./collection');
+const wishlistRoutes      = require('./wishlist');
+const marketRoutes        = require('./market');
+const contactRouter       = require('./contact');
+const userRouter          = require('./user');
+const suggestionsRouter   = require('./suggestions');
 const userVerificationRoute = require('./userVerification');
+const passwordResetRoutes = require('./passwordReset');
 
 app.use('/api/catalog', catalogRoutes);
 app.use('/api/collection', collectionRoutes);
@@ -79,17 +72,16 @@ app.use('/api/contact', contactRouter);
 app.use('/api/user', userRouter);
 app.use('/api/suggestions', suggestionsRouter);
 app.use('/api/userVerification', userVerificationRoute);
+app.use('/api', passwordResetRoutes);  // forgot & reset password endpoints
 
 // Admin-only routes
 const adminRoutes = require('./adminroutes/admin');
 app.use('/api/admin', adminRoutes);
 
-
 // Root Route (for testing)
 app.get('/', (req, res) => {
   res.send('Pop Market API is running!');
 });
-
 
 // Import signup and login handlers
 const { signup } = require('./signup');
@@ -97,8 +89,6 @@ const { login } = require('./login');
 // Public auth routes
 app.post('/api/signup', signup);
 app.post('/api/login', login);
-
-
 
 // Fetch 6 latest active items in Market
 app.get('/api/latest_market', async (req, res) => {
@@ -118,8 +108,6 @@ app.get('/api/latest_market', async (req, res) => {
     res.status(500).json({ error: 'Database query failed' });
   }
 });
-
-
 
 // ---------------------
 // Start Server
